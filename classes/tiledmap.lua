@@ -53,7 +53,7 @@ function loadTiledMap(path)
 
             map.animatedTiles[globalTileID].indeces = {}
             
-            print("Add " .. tile.id)
+            print("Add " .. globalTileID)
         end
     end
 
@@ -96,11 +96,11 @@ function loadTiledMap(path)
     -- end
     --print("Add " .. map.animatedTiles[11])
 
-    print("Number of animated tiles " .. #(map.animatedTiles))
+    --print("Number of animated tiles " .. #(map.animatedTiles))
 
     --map.frame = 0
-    map.timer = 0.0
-    map.maxTimer = 0.1
+    -- map.timer = 0.0
+    -- map.maxTimer = 0.1
 
 
 
@@ -130,40 +130,41 @@ function loadTiledMap(path)
     --     return tid
     -- end
 
-    function map:update(dt)
-        --for _, tiles in ipairs(self.animatedTiles) do
+    -- function map:update(dt)
+    --     --for _, tiles in ipairs(self.animatedTiles) do
 
-        if self.timer > self.maxTimer then
-            --self.frame = self.frame + 1
-            for i, tile in ipairs(self.tilesets[1].tiles) do
-                self.animatedTiles[tile.id].frame = self.animatedTiles[tile.id].frame + 1
-                print(self.animatedTiles[tile.id].frame)
-            end
-            self.timer = 0
-        end
+    --     if self.timer > self.maxTimer then
+    --         --self.frame = self.frame + 1
+    --         for i, tile in ipairs(self.tilesets[1].tiles) do
+    --             self.animatedTiles[tile.id].frame = self.animatedTiles[tile.id].frame + 1
+    --             print(self.animatedTiles[tile.id].frame)
+    --         end
+    --         self.timer = 0
+    --     end
 
-        self.timer = self.timer + dt
-            --print(self.frame)
+    --     self.timer = self.timer + dt
+    --         --print(self.frame)
 
-        --end
-    end
+    --     --end
+    -- end
 
     function map:update2(dt)
-        for _, tile in ipairs(self.animatedTiles) do
-
-            if tile.timer > tile.durationSec then
+        for _, animTile in pairs(self.animatedTiles) do
+            if animTile.timer > animTile.durationSec then
                 --self.frame = self.frame + 1
-                for i, tile in ipairs(self.tilesets[1].tiles) do
-                    self.animatedTiles[tile.id].frame = self.animatedTiles[tile.id].frame + 1
-                    print(self.animatedTiles[tile.id].frame)
-                    --self.animatedTiles[tile.id].timer 
-                end
-                self.timer = 0
+                -- for i, tileset in ipairs(self.tilesets) do
+                --     for k, tile in ipairs(tileset.tiles) do
+                        -- self.animatedTiles[animTile.id].frame = self.animatedTiles[animTile.id].frame + 1
+                        -- print(self.animatedTiles[animTile.id].frame)
+                        animTile.frame = animTile.frame + 1
+                        print(animTile.frame)
+                        --self.animatedTiles[tile.id].timer 
+                --     end
+                -- end
+                animTile.timer = 0
             end
 
-            self.timer = self.timer + dt
-                --print(self.frame)
-
+            animTile.timer = animTile.timer + dt
         end
     end
 
