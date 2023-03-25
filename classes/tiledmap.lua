@@ -37,25 +37,31 @@ function loadTiledMap(path)
         end
     end
 
+    -- Prepare animated tiles
     map.animatedTiles = {}
-    for i, tile in ipairs(map.tilesets[1].tiles) do
-        --map.animatedTiles[tile.id] = tile
-        table.insert(map.animatedTiles,tile.id,tile)
+    for _, tileSet in ipairs(map.tilesets) do
+        for i, tile in ipairs(tileSet.tiles) do
 
-        map.animatedTiles[tile.id].frame = 0
-        map.animatedTiles[tile.id].timer = 0
-        map.animatedTiles[tile.id].durationSec = map.animatedTiles[tile.id].animation[1].duration / 1000
+            local firstgid = map.tilesets[i].firstgid
+            --map.animatedTiles[tile.id] = tile
+            local globalTileID = tile.id + tileSet.firstgid - 1
+            table.insert(map.animatedTiles, globalTileID ,tile)
 
-        print("Add " .. tile.id)
+            map.animatedTiles[globalTileID].frame = 0
+            map.animatedTiles[globalTileID].timer = 0
+            map.animatedTiles[globalTileID].durationSec = map.animatedTiles[globalTileID].animation[1].duration / 1000
+
+            map.animatedTiles[globalTileID].indeces = {}
+            
+            print("Add " .. tile.id)
+        end
     end
 
-    --print("Add " .. map.animatedTiles[11])
+    -- function map:pr()
+    --     print("Ololo")
+    -- end
 
-    print("Number of animated tiles " .. #(map.animatedTiles))
-
-    --map.frame = 0
-    map.timer = 0.0
-    map.maxTimer = 0.1
+    -- map:pr()
 
     function map:getFrameCount(tid)
         local numFrames = 0
@@ -65,6 +71,38 @@ function loadTiledMap(path)
         end
         return numFrames
     end
+
+    function map:prepareAnimatedTiles()
+        for _, layer in ipairs(self.layers) do 
+            for index, tid in ipairs(layer.data) do
+                if self:getFrameCount(tid - 1) > 0 then
+                    table.insert(self.animatedTiles[tid - 1].indeces, index)
+                end
+            end
+        end
+    end
+
+    map:prepareAnimatedTiles()
+
+    -- for i, tile in ipairs(map.tilesets[1].tiles) do
+    --     --map.animatedTiles[tile.id] = tile
+    --     table.insert(map.animatedTiles,tile.id,tile)
+
+    --     map.animatedTiles[tile.id].frame = 0
+    --     map.animatedTiles[tile.id].timer = 0
+    --     map.animatedTiles[tile.id].durationSec = map.animatedTiles[tile.id].animation[1].duration / 1000
+
+    --     print("Add " .. tile.id)
+    -- end
+    --print("Add " .. map.animatedTiles[11])
+
+    print("Number of animated tiles " .. #(map.animatedTiles))
+
+    --map.frame = 0
+    map.timer = 0.0
+    map.maxTimer = 0.1
+
+
 
     function map:getNextTileFrame(tid)
         local numFrames = self:getFrameCount(tid - 1)
@@ -111,19 +149,20 @@ function loadTiledMap(path)
     end
 
     function map:update2(dt)
-        for _, tiles in ipairs(self.animatedTiles) do
+        for _, tile in ipairs(self.animatedTiles) do
 
-        if self.timer > self.maxTimer then
-            --self.frame = self.frame + 1
-            for i, tile in ipairs(self.tilesets[1].tiles) do
-                self.animatedTiles[tile.id].frame = self.animatedTiles[tile.id].frame + 1
-                print(self.animatedTiles[tile.id].frame)
+            if tile.timer > tile.durationSec then
+                --self.frame = self.frame + 1
+                for i, tile in ipairs(self.tilesets[1].tiles) do
+                    self.animatedTiles[tile.id].frame = self.animatedTiles[tile.id].frame + 1
+                    print(self.animatedTiles[tile.id].frame)
+                    --self.animatedTiles[tile.id].timer 
+                end
+                self.timer = 0
             end
-            self.timer = 0
-        end
 
-        self.timer = self.timer + dt
-            --print(self.frame)
+            self.timer = self.timer + dt
+                --print(self.frame)
 
         end
     end
