@@ -20,11 +20,11 @@ function loadTiledMap(path)
     local index = 1
 
     for _, tileset in ipairs(map.tilesets) do
-        for y = 0, (tileset.imageheight / tileset.tileheight) - 1 do
-            for x = 0, (tileset.imagewidth / tileset.tilewidth) - 1 do
+        for y = 0, tileset.tilecount / tileset.columns - 1 do
+            for x = 0, tileset.columns - 1 do
                 local quad = love.graphics.newQuad(
-                    x * tileset.tilewidth,
-                    y * tileset.tileheight,
+                    x * tileset.tilewidth + x * tileset.spacing + tileset.margin,
+                    y * tileset.tileheight + y * tileset.spacing + tileset.margin,
                     tileset.tilewidth,
                     tileset.tileheight,
                     tileset.imagewidth,
