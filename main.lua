@@ -1,7 +1,7 @@
 require "classes/tiledmap"
 
 local STAGE_LIST = {}
-local STAGE_INDEX = 1
+local STAGE_INDEX = 3
 
 function love.load()
     -- set pixelate scale mode

@@ -43,15 +43,15 @@ return {
           animation = {
             {
               tileid = 11,
-              duration = 800
+              duration = 80
             },
             {
               tileid = 12,
-              duration = 800
+              duration = 80
             },
             {
               tileid = 10,
-              duration = 800
+              duration = 80
             }
           }
         }
