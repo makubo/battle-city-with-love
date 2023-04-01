@@ -35,7 +35,7 @@ function love.draw()
 end
 
 function love.update(dt)
-    _G.map:update2(dt)
+    _G.map:update(dt)
 end
 
 function love.keypressed(key)
