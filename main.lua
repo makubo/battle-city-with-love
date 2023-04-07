@@ -1,7 +1,8 @@
 require "classes/tiledmap"
+require("classes/TileMap")
 
 local STAGE_LIST = {}
-local STAGE_INDEX = 3
+local STAGE_INDEX = 2
 
 function love.load()
     -- set pixelate scale mode
@@ -14,7 +15,8 @@ function love.load()
     end
 
     print("Stage count " .. #STAGE_LIST)
-    _G.map = loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX])
+    --_G.map = loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX])
+    _G.map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
 end
 
 function love.draw()
@@ -35,7 +37,7 @@ function love.draw()
 end
 
 function love.update(dt)
-    _G.map:update(dt)
+    --_G.map:update(dt)
 end
 
 function love.keypressed(key)
