@@ -1,5 +1,6 @@
-require "classes/tiledmap"
-require("classes/TileMap")
+--require "classes/tiledmap"
+require "classes/TileMap"
+require "classes/Scene"
 
 local STAGE_LIST = {}
 local STAGE_INDEX = 2
@@ -7,16 +8,22 @@ local STAGE_INDEX = 2
 function love.load()
     -- set pixelate scale mode
     love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.setBackgroundColor( 99/255, 99/255, 99/255, 0 )
 
     local files = love.filesystem.getDirectoryItems(_G.stagesDirectory)
     
-    for k, file in ipairs(files) do
+    for _, file in ipairs(files) do
         table.insert(STAGE_LIST, (string.gsub(file, ".lua", "", 1)))
     end
 
     print("Stage count " .. #STAGE_LIST)
     --_G.map = loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX])
-    _G.map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    local map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    map.xPos = 16
+    map.yPos = 8
+
+    _G.scene = Scene:new()
+    _G.scene:add(map)
 end
 
 function love.draw()
@@ -25,19 +32,34 @@ function love.draw()
     local scaleX = width / _G.initialWidth
     local scaleY = height / _G.initialHeight
 
-    local scale = ( scaleX <= scaleY) and scaleX or scaleY
+    local scale = 1
+    local shiftX = 0
+    local shiftY = 0
+
+    if scaleX <= scaleY then
+        scale = scaleX
+        shiftX = 0
+        shiftY = ( height - _G.initialHeight * scale ) / scale / 2
+    else
+        scale = scaleY
+        shiftX = ( width - _G.initialWidth * scale ) / scale / 2
+        shiftY = 0
+    end
+
+    --local scale = ( scaleX <= scaleY) and scaleX or scaleY
 
     love.graphics.scale(scale)
-    
-    love.graphics.setBackgroundColor( 99/255, 99/255, 99/255, 0 )
 
-    _G.map:draw(16, 8)
+    _G.scene:draw(shiftX, shiftY)
+    --_G.scene:draw()
    
-    love.graphics.print(tostring(scaleX) .. " x " .. tostring(scaleY), 2, 2)
+    --love.graphics.print(tostring(scaleX) .. " x " .. tostring(scaleY), 2, 2)
+    love.graphics.print(tostring(shiftX) .. " x " .. tostring(shiftY), 2, 2)
 end
 
 function love.update(dt)
     --_G.map:update(dt)
+    _G.scene:update(dt)
 end
 
 function love.keypressed(key)
@@ -57,5 +79,6 @@ function nextStage()
     end
 
     print("Load stage " .. STAGE_INDEX .. " " .. STAGE_LIST[STAGE_INDEX])
-    _G.map = loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]) 
+    _G.scene.childs[1] = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    --loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]) 
 end

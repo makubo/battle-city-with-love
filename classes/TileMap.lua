@@ -3,6 +3,8 @@ require("classes/TileSet")
 TileMap = {}
 TileMap.tilesets = {}
 TileMap.layers = {}
+TileMap.xPos = 0
+TileMap.yPos = 0
 
 function TileMap:new(model)
     local newObject = model
@@ -53,9 +55,9 @@ function TileMap:update(dt)
     end
 end
 
-
 -- TODO: draw by layer method
 function TileMap:draw(xPos, yPos)
+--function TileMap:draw()
     for _, layer in ipairs(self.layers) do
         for y = 0, layer.height - 1 do
             for x = 0, layer.width -1 do
@@ -69,7 +71,7 @@ function TileMap:draw(xPos, yPos)
                             local xx = x * tileset.tilewidth
                             local yy = y * tileset.tileheight
         
-                            tileset:drawTile(tid, xx + xPos, yy + yPos)
+                            tileset:drawTile(tid, xx + self.xPos + xPos, yy + self.yPos + yPos)
                         end
                     end
                 end
