@@ -9,6 +9,8 @@ function love.conf(t)
 
     t.version = "11.4"
 
+    t.console = true
+
     t.window.title = "Battle City with LÖVE"         -- The window title (string)
     t.window.icon = "icon.png"                 -- Filepath to an image to use as the window's icon (string)
 
