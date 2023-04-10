@@ -1,38 +1,44 @@
+require("classes/Tools")
+require("classes/GameObject")
 require("classes/TileSet")
 
 TileMap = {}
+
+extended(TileMap, GameObject)
+
 TileMap.tilesets = {}
 TileMap.layers = {}
-TileMap.xPos = 0
-TileMap.yPos = 0
 
-function TileMap:new(model)
-    local newObject = model
-    setmetatable(newObject, self)
-    self.__index = self
+function TileMap:constructor(model)
+    --ocal newObject = model
+    -- setmetatable(newObject, self)
+    -- self.__index = self
 
     --newObject.layers = mod.layers
 
-    for i = 1, #newObject.tilesets do
+    -- self.tilesets = {}
+    -- self.layers = {}
+
+    for i = 1, #self.tilesets do
         local ts = nil
-        if newObject.tilesets[i].filename ~= nil then
-            local firstgid = newObject.tilesets[i].firstgid
+        if self.tilesets[i].filename ~= nil then
+            local firstgid = self.tilesets[i].firstgid
 
-            newObject.tilesets[i] = TileSet:new(require("gfx/" .. newObject.tilesets[i].name))
-            newObject.tilesets[i].firstgid = firstgid
+            self.tilesets[i] = TileSet:new(require("gfx/" .. self.tilesets[i].name))
+            self.tilesets[i].firstgid = firstgid
 
-            print("ff " .. newObject.tilesets[i].firstgid)
+            print("ff " .. self.tilesets[i].firstgid)
             --newObject.model.tilesets[i] = require("gfx/" .. newObject.model.tilesets[i].name)
             --newObject.model.tilesets[i].firstgid = firstgid
         else
-            newObject.tilesets[i] = TileSet:new(newObject.tilesets[i])
+            self.tilesets[i] = TileSet:new(self.tilesets[i])
             --newObject.tilesets[i].firstgid = firstgid
         end
         --table.insert(newObject.tilesets, ts)
         --table.insert(newObject.model.textures,love.graphics.newImage(map.tilesets[i].image))
     end
 
-    return newObject
+    return self
 end
 
 -- TODO: move animation processing to the tileset class????
@@ -71,7 +77,7 @@ function TileMap:draw(xPos, yPos)
                             local xx = x * tileset.tilewidth
                             local yy = y * tileset.tileheight
         
-                            tileset:drawTile(tid, xx + self.xPos + xPos, yy + self.yPos + yPos)
+                            tileset:drawTile(tid, xx + self:getXPos() + xPos, yy + self:getYPos() + yPos)
                         end
                     end
                 end

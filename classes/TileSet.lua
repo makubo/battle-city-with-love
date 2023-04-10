@@ -1,30 +1,33 @@
+require("classes/Tools")
+require("classes/GameObject")
+require("classes/Tile")
+
 TileSet = {}
 
-TileSet.quads = {}
+extended(TileSet, GameObject)
+
+--TileSet.quads = {}
 TileSet.animatedTiles = {}
 TileSet.firstgid = 1
 
-function TileSet:new(model)
-    local newObject = model
-    setmetatable(newObject, self)
-    self.__index = self
+function TileSet:constructor()
+    --local newObject = model
+    -- setmetatable(newObject, self)
+    -- self.__index = self
 
-    print("Tile count: " .. #newObject.tiles)
+    print("Tile count: " .. #self.tiles)
 
-    newObject:loadTiles()
-    newObject:prepareAnimatedTiles()
-    newObject.texture = love.graphics.newImage(newObject.image)
+    self.texture = love.graphics.newImage(self.image)
+    self:loadTiles()
+    self:prepareAnimatedTiles()
 
-    print("Quads length: " .. #newObject.quads)
+    --print("Quads length: " .. #self.quads)
 
     -- setmetatable(newObject, self)
     -- self.__index = self
-    return newObject
-end
 
--- function TileSet:setFirstTsID(id)
---     self.firstGlobalID = id
--- end
+    return self
+end
 
 function TileSet:loadTiles()
     local index = 1
@@ -39,7 +42,13 @@ function TileSet:loadTiles()
                 self.imageheight
             )
             -- print("Load quad #" .. index .. "(" .. x .. "x" .. y .. ") from " .. tileset.image)
-            table.insert(self.quads, quad)
+            --table.insert(self.quads, quad)
+
+            local tile = Tile:new()
+            tile:setQuad(quad)
+            tile:setTexture(self.texture)
+            self:addChild(tile)
+
             index = index + 1
         end
     end
@@ -104,5 +113,6 @@ end
 
 function TileSet:drawTile(globalTid, xPos, yPos)
     local tid = self:tidGlobalToLocal(globalTid)
-    love.graphics.draw(self.texture, self.quads[tid], xPos, yPos)
+    self:getChildren()[tid]:draw(xPos, yPos)
+    --love.graphics.draw(self.texture, self.quads[tid], xPos, yPos)
 end
