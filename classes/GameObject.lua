@@ -1,5 +1,9 @@
 GameObject = {}
 
+function GameObject:getObjectName()
+    return "GameObject"
+end
+
 function GameObject:new(model)
 
     --local args = {...}
@@ -55,6 +59,7 @@ function GameObject:constructor(...)
 end
 
 function GameObject:update(dt)
+    print(self.getObjectName() .. " update")
     for _, child in ipairs(self:getChildren()) do
         child:update(dt)
     end

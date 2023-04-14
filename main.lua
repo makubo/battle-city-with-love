@@ -1,3 +1,8 @@
+if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
+
+--if pcall(require, "lldebugger") then require("lldebugger").start() end
+--if pcall(require, "mobdebug") then require("mobdebug").start() end
+
 require "classes/TileMap"
 require "classes/Scene"
 
@@ -78,6 +83,13 @@ function nextStage()
     end
 
     print("Load stage " .. STAGE_INDEX .. " " .. STAGE_LIST[STAGE_INDEX])
-    _G.scene:getChildren()[1] = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+
+    local map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    map:setXPos(16)
+    map:setYPos(8)
+
+    _G.scene:getChildren()[1] = map
+    --TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    
     --loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]) 
 end
