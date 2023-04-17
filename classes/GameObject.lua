@@ -6,11 +6,6 @@ end
 
 function GameObject:new(model)
 
-    --local args = {...}
-    -- if ... ~= nil then
-    --     args = table.pack(...)
-    -- end
-
     local xPos, yPos, children
 
     xPos = 0
@@ -59,7 +54,7 @@ function GameObject:constructor(...)
 end
 
 function GameObject:update(dt)
-    print(self.getObjectName() .. " update")
+    --print(self.getObjectName() .. " update")
     for _, child in ipairs(self:getChildren()) do
         child:update(dt)
     end
@@ -76,3 +71,5 @@ function GameObject:draw(xPos, yPos)
         child:draw(self:getXPos() + xPos, self:getYPos() + yPos)
     end
 end
+
+return GameObject

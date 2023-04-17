@@ -1,102 +1,144 @@
-require("classes/Tools")
-require("classes/GameObject")
-
 Tile = {}
 
-extended(Tile, GameObject)
+function Tile:new(model)
 
-function Tile:constructor(model)
-    local quads = {}
-    local texture
+    local xPos, yPos, children
 
-    local frame = 1
-    local timer = 0
+    xPos = 0
+    yPos = 0
+    children = {}
 
-    local tile = model or {}
-    tile.frame = 1
-    tile.timer = 0
-    tile.quads = {}
-    function tile:addQuad(q, index)
+    local obj = model or {}
+    obj.frame = 1
+    obj.timer = 0
+    obj.quads = {}
+    obj.texture = nil
+    obj.animation = nil
+
+    function obj:setXPos(x)
+        xPos = x
+    end
+
+    function obj:getXPos()
+        return xPos
+    end
+
+    function obj:setYPos(y)
+        yPos = y
+    end
+
+    function obj:getYPos()
+        return yPos
+    end
+
+    function obj:getChildren()
+        return children
+    end
+
+    function obj:addChild(object)
+        table.insert(children, object)
+    end
+
+    function obj:getChild(index)
+        return children[index]
+    end
+
+    function obj:addQuad(q)
+        print("Add quad")
         table.insert(self.quads, q)
     end
 
-    function tile:getQuad(index)
+    function obj:getQuad(index)
         return self.quads[index or self.frame]
     end
 
-    function tile:setTexture(tex)
-        texture = tex
+    function obj:setTexture(tex)
+        print("Set texture")
+        self.texture = tex
     end
 
-    function tile:getTexture()
-        return texture
+    function obj:getTexture()
+        return self.texture
     end
     
-    function tile:setFrame(fr)
-        frame = fr
+    function obj:setFrame(fr)
+        self.frame = fr
     end
 
-    function tile:getFrame()
-        return frame
+    function obj:getFrame()
+        return self.frame
     end
 
-    function tile:setTimer(t)
-        frame = t
+    function obj:setTimer(t)
+        self.frame = t
     end
 
-    function tile:getTimer()
-        return timer
+    function obj:getTimer()
+        return self.timer
     end
 
-    function tile:setAnimation(animation)
+    function obj:setAnimation(animation)
         print("Add animation with " .. #animation .. " frames")
         self.animation = animation
     end
 
-    function tile:isAnimated()
+    function obj:isAnimated()
         if self.animation ~= nil then
             return true
         end
         return false
     end
 
-    setmetatable(tile,self)
+    setmetatable(obj, self)
     self.__index = self
-    return tile
-end
 
-function Tile:update(dt)
-    print("Tile update")
-    if self.animation ~= nil then
-        print("Frame number = " .. self.frame)
-        local id = self.frame % #(self.animation) + 1
-        print("Anim ID = " .. id)
-        local durationSec = self.animation[id].duration / 1000
-        print("Duration = " .. durationSec)
-        print("Timer = " .. self.timer)
-        if self.timer >= durationSec then
-            --self:setFrame(self:getFrame() % #(self.animation) + 1)
-            self.frame = self.frame % #(self.animation) + 1
-            print("Frame - " .. self.frame)
-            --print("Frame - " .. self:getFrame())
-            --animTile.durationSec = 
-            --self:setTimer(self:getTimer() - durationSec)
-            self.timer = 0
-        end
-        local timer = self.timer + dt
-        self.timer = timer
-    end
+    return obj
 end
 
 function Tile:draw(xPos, yPos)
-    --print("Tile draw")
+
     if xPos == nil then
         xPos = 0
     end
     if yPos == nil then
         yPos = 0
     end
+
+    print("Daw")
+
+    if self.animation ~= nil then
+        print("Tile draw frame" .. self.frame)
+    end
     --love.graphics.draw(self:getTexture(), self:getQuad(), xPos, yPos)
-    love.graphics.draw(self:getTexture(), self.quads[self.frame], xPos, yPos)
-    
+    love.graphics.draw(self.texture, self.quads[self.frame], xPos, yPos)
+
 end
+
+function Tile:update(dt)
+    --print("Tile update")
+    if self.animation ~= nil then
+        --print("Frame number = " .. self.frame)
+        local frame = self.frame % #(self.animation) + 1
+        --print("Anim ID = " .. frame)
+        local durationSec = self.animation[frame].duration / 1000
+        --print("Duration = " .. durationSec)
+        --print("Timer = " .. self.timer)
+        if self.timer >= durationSec then
+            -- local frame = self:getFrame() % #(self.animation) + 1
+            -- print("Set frame: " .. frame)
+            -- self:setFrame(frame)
+            self.frame = self.frame % #(self.animation) + 1
+            print("Frame - " .. self.frame)
+            --print("Frame - " .. self:getFrame())
+            --animTile.durationSec = 
+            --self:setTimer(self:getTimer() - durationSec)
+            --self:setTimer(0)
+            self.timer = 0
+        end
+        local timer = self.timer + dt
+        --self:setTimer(timer)
+        self.timer = timer
+    end
+end
+
+return Tile

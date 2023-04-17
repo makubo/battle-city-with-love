@@ -7,7 +7,7 @@ require "classes/TileMap"
 require "classes/Scene"
 
 local STAGE_LIST = {}
-local STAGE_INDEX = 2
+local STAGE_INDEX = 3
 
 function love.load()
     -- set pixelate scale mode
