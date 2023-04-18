@@ -9,7 +9,11 @@ extended(TileMap, GameObject)
 TileMap.tilesets = {}
 TileMap.layers = {}
 
-function TileMap:constructor(model)
+function TileMap:getObjectName()
+    return "TileMap"
+end
+
+function TileMap:constructor()
     --ocal newObject = model
     -- setmetatable(newObject, self)
     -- self.__index = self
@@ -28,6 +32,8 @@ function TileMap:constructor(model)
             self.tilesets[i].firstgid = firstgid
 
             print("ff " .. self.tilesets[i].firstgid)
+
+            self:addChild(self.tilesets[i])
             --newObject.model.tilesets[i] = require("gfx/" .. newObject.model.tilesets[i].name)
             --newObject.model.tilesets[i].firstgid = firstgid
         else
@@ -42,24 +48,32 @@ function TileMap:constructor(model)
 end
 
 -- TODO: move animation processing to the tileset class????
-function TileMap:update(dt)
-    --if tilesets
-    -- print("Here" .. #self.tilesets[1].quads)
-    -- print("Here" .. #self.tilesets[1].animatedTiles)
-    for i, tileset in ipairs(self.tilesets) do
-        -- print(tileset.name)
-        -- print(#tileset.quads)
-        -- print(tileset.animatedTiles)
-        for _, animTile in pairs(tileset.animatedTiles) do
-            if animTile.timer > animTile.durationSec then
-                animTile.frame = animTile.frame + 1
-                animTile.durationSec = animTile.animation[animTile.frame % #(animTile.animation) + 1].duration / 1000
-                animTile.timer = 0
-            end
-            animTile.timer = animTile.timer + dt
-        end
-    end
-end
+-- function TileMap:update(dt)
+--     --if tilesets
+--     -- print("Here" .. #self.tilesets[1].quads)
+--     -- print("Here" .. #self.tilesets[1].animatedTiles)
+--     for i, tileset in ipairs(self.tilesets) do
+--         -- print(tileset.name)
+--         -- print(#tileset.quads)
+--         -- print(tileset.animatedTiles)
+--         for _, animTile in pairs(tileset.animatedTiles) do
+--             if animTile.timer > animTile.durationSec then
+--                 animTile.frame = animTile.frame + 1
+--                 animTile.durationSec = animTile.animation[animTile.frame % #(animTile.animation) + 1].duration / 1000
+--                 animTile.timer = 0
+--             end
+--             animTile.timer = animTile.timer + dt
+--         end
+--     end
+-- end
+
+-- function TileMap:update(dt)
+--     print("tm here")
+--     print(self.getObjectName() .. " update")
+--     for _, child in ipairs(self:getChildren()) do
+--         child:update(dt)
+--     end
+-- end
 
 -- TODO: draw by layer method
 function TileMap:draw(xPos, yPos)
