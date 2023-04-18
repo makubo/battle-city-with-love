@@ -60,7 +60,7 @@ function Tile:new(model)
     function obj:getTexture()
         return self.texture
     end
-    
+
     function obj:setFrame(fr)
         self.frame = fr
     end
@@ -103,8 +103,6 @@ function Tile:draw(xPos, yPos)
     if yPos == nil then
         yPos = 0
     end
-
-    print("Daw")
 
     if self.animation ~= nil then
         print("Tile draw frame" .. self.frame)
