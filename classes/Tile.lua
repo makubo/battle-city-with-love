@@ -15,6 +15,8 @@ function Tile:new(model)
     obj.texture = nil
     obj.animation = nil
 
+    local index = nil
+
     function obj:setXPos(x)
         xPos = x
     end
@@ -39,8 +41,8 @@ function Tile:new(model)
         table.insert(children, object)
     end
 
-    function obj:getChild(index)
-        return children[index]
+    function obj:getChild(i)
+        return children[i]
     end
 
     function obj:addQuad(q)
@@ -48,8 +50,16 @@ function Tile:new(model)
         table.insert(self.quads, q)
     end
 
-    function obj:getQuad(index)
-        return self.quads[index or self.frame]
+    function obj:getQuad(i)
+        return self.quads[i or self.frame]
+    end
+
+    function obj:setIndex(i)
+        index = i
+    end
+
+    function obj:getIndex()
+        return index
     end
 
     function obj:setTexture(tex)
@@ -96,6 +106,7 @@ function Tile:new(model)
 end
 
 function Tile:draw(xPos, yPos)
+    --print("Tile draw index " .. self:getIndex())
 
     if xPos == nil then
         xPos = 0
@@ -105,7 +116,7 @@ function Tile:draw(xPos, yPos)
     end
 
     if self.animation ~= nil then
-        print("Tile draw frame" .. self.frame)
+        --print("Tile draw frame" .. self.frame)
     end
     --love.graphics.draw(self:getTexture(), self:getQuad(), xPos, yPos)
     love.graphics.draw(self.texture, self.quads[self.frame], xPos, yPos)
@@ -115,10 +126,13 @@ end
 function Tile:update(dt)
     --print("Tile update")
     if self.animation ~= nil then
+    --if false then
+        --print("Update index " .. self:getIndex())
         --print("Frame number = " .. self.frame)
-        local frame = self.frame % #(self.animation) + 1
+        --print("Frame number = " .. self.frame)
+        --local frame = self.frame % #(self.animation) + 1
         --print("Anim ID = " .. frame)
-        local durationSec = self.animation[frame].duration / 1000
+        local durationSec = self.animation[self.frame].duration / 1000
         --print("Duration = " .. durationSec)
         --print("Timer = " .. self.timer)
         if self.timer >= durationSec then
@@ -126,12 +140,15 @@ function Tile:update(dt)
             -- print("Set frame: " .. frame)
             -- self:setFrame(frame)
             self.frame = self.frame % #(self.animation) + 1
-            print("Frame - " .. self.frame)
-            --print("Frame - " .. self:getFrame())
+            --print("Frame - " .. self.frame)
+            print("Frame         - " .. self:getFrame())
+            print("Frame Tile ID - " .. self.animation[self:getFrame()].tileid)
+            print("Frame Time    - " .. durationSec)
+            print("")
             --animTile.durationSec = 
             --self:setTimer(self:getTimer() - durationSec)
             --self:setTimer(0)
-            self.timer = 0
+            self.timer = self:getTimer() - durationSec
         end
         local timer = self.timer + dt
         --self:setTimer(timer)
