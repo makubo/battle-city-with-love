@@ -1,61 +1,54 @@
-GameObject = {}
+--local class = require 'lib.middleclass.middleclass'
 
-function GameObject:getObjectName()
-    return "GameObject"
+GameObject = class('GameObject')
+
+-- function GameObject:getObjectName()
+--     return "GameObject"
+-- end
+
+function GameObject:initialize()
+    --self.name = name
+
+    self._xPos = 0
+    self._yPos = 0
+    self._children = {}
+
+    --local obj = model or {}
+
 end
 
-function GameObject:new(model)
-
-    local xPos, yPos, children
-
-    xPos = 0
-    yPos = 0
-    children = {}
-
-    local obj = model or {}
-
-    function obj:setXPos(x)
-        xPos = x
-    end
-
-    function obj:getXPos()
-        return xPos
-    end
-
-    function obj:setYPos(y)
-        yPos = y
-    end
-
-    function obj:getYPos()
-        return yPos
-    end
-
-    function obj:getChildren()
-        return children
-    end
-
-    function obj:addChild(object)
-        table.insert(children, object)
-    end
-
-    function obj:getChild(index)
-        return children[index]
-    end
-
-    setmetatable(obj, self)
-    self.__index = self
-
-    return obj:constructor(model)
+function GameObject:setXPos(x)
+    self._xPos = x
 end
 
--- public constructor method for being redefined
-function GameObject:constructor(...)
-    return self
+function GameObject:getXPos()
+    return self._xPos
+end
+
+function GameObject:setYPos(y)
+    self._yPos = y
+end
+
+function GameObject:getYPos()
+    return self._yPos
+end
+
+function GameObject:getChildren()
+    return self._children
+end
+
+function GameObject:addChild(object)
+    table.insert(self._children, object)
+end
+
+function GameObject:getChild(index)
+    return self._children[index]
 end
 
 function GameObject:update(dt)
     --print(self.getObjectName() .. " update")
-    for _, child in ipairs(self:getChildren()) do
+    --for _, child in ipairs(self:getChildren()) do
+    for _, child in ipairs(self._children) do
         child:update(dt)
     end
 end
@@ -72,4 +65,4 @@ function GameObject:draw(xPos, yPos)
     end
 end
 
-return GameObject
+--return GameObject

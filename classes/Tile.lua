@@ -1,111 +1,84 @@
-Tile = {}
+Tile = class("Tile", GameObject)
 
-function Tile:new(model)
+function Tile:initialize(name)
+    GameObject.initialize(self)
+    print("New tile " .. name)
+    --local obj = model or {}
 
-    local xPos, yPos, children
+    self.frame = 1
+    self.timer = 0
+    self.quads = {}
+    self.texture = nil
+    self.animation = nil
 
-    xPos = 0
-    yPos = 0
-    children = {}
+    self.id = nil
 
-    local obj = model or {}
-    obj.frame = 1
-    obj.timer = 0
-    obj.quads = {}
-    obj.texture = nil
-    obj.animation = nil
+end
 
-    function obj:setXPos(x)
-        xPos = x
+function Tile:addQuad(q)
+    print("Add quad")
+    table.insert(self.quads, q)
+end
+
+function Tile:getQuad(index)
+    return self.quads[index or self.frame]
+end
+
+function Tile:setTexture(tex)
+    print("Set texture")
+    self.texture = tex
+end
+
+function Tile:getTexture()
+    return self.texture
+end
+
+function Tile:setFrame(fr)
+    self.frame = fr
+end
+
+function Tile:getFrame()
+    return self.frame
+end
+
+function Tile:setTimer(t)
+    self.frame = t
+end
+
+function Tile:getTimer()
+    return self.timer
+end
+
+function Tile:setAnimation(animation)
+    print("Add animation with " .. #animation .. " frames")
+    self.animation = animation
+end
+
+function Tile:isAnimated()
+    print("Check animated:" .. self.id)
+    if self.animation ~= nil then
+        print(self.id .. "is animated tile")
+        return true
     end
-
-    function obj:getXPos()
-        return xPos
-    end
-
-    function obj:setYPos(y)
-        yPos = y
-    end
-
-    function obj:getYPos()
-        return yPos
-    end
-
-    function obj:getChildren()
-        return children
-    end
-
-    function obj:addChild(object)
-        table.insert(children, object)
-    end
-
-    function obj:getChild(index)
-        return children[index]
-    end
-
-    function obj:addQuad(q)
-        print("Add quad")
-        table.insert(self.quads, q)
-    end
-
-    function obj:getQuad(index)
-        return self.quads[index or self.frame]
-    end
-
-    function obj:setTexture(tex)
-        print("Set texture")
-        self.texture = tex
-    end
-
-    function obj:getTexture()
-        return self.texture
-    end
-
-    function obj:setFrame(fr)
-        self.frame = fr
-    end
-
-    function obj:getFrame()
-        return self.frame
-    end
-
-    function obj:setTimer(t)
-        self.frame = t
-    end
-
-    function obj:getTimer()
-        return self.timer
-    end
-
-    function obj:setAnimation(animation)
-        print("Add animation with " .. #animation .. " frames")
-        self.animation = animation
-    end
-
-    function obj:isAnimated()
-        if self.animation ~= nil then
-            return true
-        end
-        return false
-    end
-
-    setmetatable(obj, self)
-    self.__index = self
-
-    return obj
+    print(self.id .. "isn't animated tile")
+    return false
 end
 
 function Tile:draw(xPos, yPos)
+    print("Draw " .. self.id)
 
-    if xPos == nil then
-        xPos = 0
-    end
-    if yPos == nil then
-        yPos = 0
-    end
+    --print("Tile draw")
+    -- if xPos == nil then
+    --     xPos = 0
+    -- end
+    -- if yPos == nil then
+    --     yPos = 0
+    -- end
+
+
 
     if self.animation ~= nil then
-        print("Tile draw frame" .. self.frame)
+        print("Tile draw frame " .. self.frame)
     end
     --love.graphics.draw(self:getTexture(), self:getQuad(), xPos, yPos)
     love.graphics.draw(self.texture, self.quads[self.frame], xPos, yPos)
@@ -113,8 +86,12 @@ function Tile:draw(xPos, yPos)
 end
 
 function Tile:update(dt)
+    --print("UPDATE:" .. self.id)
+    -- print(self)
     --print("Tile update")
     if self.animation ~= nil then
+        print("UPDATE animated:" .. self.id)
+        print(self)
         --print("Frame number = " .. self.frame)
         local frame = self.frame % #(self.animation) + 1
         --print("Anim ID = " .. frame)
@@ -138,5 +115,3 @@ function Tile:update(dt)
         self.timer = timer
     end
 end
-
-return Tile

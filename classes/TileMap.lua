@@ -1,19 +1,31 @@
-require("classes/Tools")
-require("classes/GameObject")
-require("classes/TileSet")
+--require("classes/Tools")
+--require("classes/GameObject")
+require "classes.TileSet"
 
-TileMap = {}
+TileMap = class("TileMap", GameObject)
 
-extended(TileMap, GameObject)
+--extended(TileMap, GameObject)
 
-TileMap.tilesets = {}
-TileMap.layers = {}
+function TileMap:initialize(name, model)
+    GameObject.initialize(self)
+    self.name = name
+-- end
 
-function TileMap:getObjectName()
-    return "TileMap"
-end
+-- TileMap.tilesets = {}
+-- TileMap.layers = {}
 
-function TileMap:constructor()
+-- function TileMap:loadModel(model)
+    self.tilesets = model.tilesets
+    self.layers = model.layers
+-- end
+
+
+
+-- -- function TileMap:getObjectName()
+-- --     return "TileMap"
+-- -- end
+
+-- function TileMap:constructor()
     --ocal newObject = model
     -- setmetatable(newObject, self)
     -- self.__index = self
@@ -77,7 +89,6 @@ end
 
 -- TODO: draw by layer method
 function TileMap:draw(xPos, yPos)
---function TileMap:draw()
     for _, layer in ipairs(self.layers) do
         for y = 0, layer.height - 1 do
             for x = 0, layer.width -1 do

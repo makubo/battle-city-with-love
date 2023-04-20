@@ -1,0 +1,4 @@
+[submodule "lib/middleclass"]
+	path = lib/middleclass
+	url = https://github.com/kikito/middleclass.git
+	ignore = dirty

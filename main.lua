@@ -3,13 +3,18 @@ if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
 --if pcall(require, "lldebugger") then require("lldebugger").start() end
 --if pcall(require, "mobdebug") then require("mobdebug").start() end
 
-require "classes/TileMap"
-require "classes/Scene"
+class = require "lib.middleclass.middleclass"
+require "classes.GameObject"
+require "classes.TileMap"
+require "classes.Scene"
 
 local STAGE_LIST = {}
 local STAGE_INDEX = 3
 
+
+
 function love.load()
+
     -- set pixelate scale mode
     love.graphics.setDefaultFilter("nearest", "nearest")
     -- TODO, set background as an object
@@ -22,15 +27,17 @@ function love.load()
     end
 
     print("Stage count " .. #STAGE_LIST)
-    local map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    local map = TileMap:new("map", require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
     map:setXPos(16)
     map:setYPos(8)
 
     _G.scene = Scene:new()
     _G.scene:addChild(map)
 end
+local socket = require 'socket'
 
 function love.draw()
+    socket.sleep(0.2)
     local width, height = love.graphics.getDimensions()
 
     local scaleX = width / _G.initialWidth
@@ -84,7 +91,7 @@ function nextStage()
 
     print("Load stage " .. STAGE_INDEX .. " " .. STAGE_LIST[STAGE_INDEX])
 
-    local map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    local map = TileMap:new("ssd",require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
     map:setXPos(16)
     map:setYPos(8)
 
