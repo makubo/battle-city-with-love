@@ -7,6 +7,7 @@ function love.conf(config)
 
     _G.stagesDirectory = "stages"
 
+    -- IDs in tileset animation exported with "Tiled" counted from 0 while in tilemap from 1
     _G.tilesetIdCorrection = 1
 
     config.version = "11.4"

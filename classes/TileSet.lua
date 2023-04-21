@@ -14,7 +14,11 @@ function TileSet:constructor()
 
     local tileSet = {}
 
-    print("Tile count: " .. #self.tiles)
+    if self.tiles ~= nil then
+        print("Animated tile count: " .. #self.tiles)
+    else
+        print("Animated tile count: 0")
+    end
 
     self.texture = love.graphics.newImage(self.image)
     self:loadTiles()
@@ -22,11 +26,10 @@ function TileSet:constructor()
     setmetatable(tileSet,self)
     self.__index = self
     return tileSet
-    
 end
 
 function TileSet:loadTiles()
-    local index = 1
+    local index = self.firstgid
     for y = 0, (self.imageheight / self.tileheight) - 1 do
         for x = 0, (self.imagewidth / self.tilewidth) - 1 do
             local quad = love.graphics.newQuad(
@@ -56,30 +59,23 @@ end
 function TileSet:prepareAnimatedTiles()
     print("Tile count from proc: " .. #self.tiles)
     for _, tile in ipairs(self.tiles) do
-        
-
-        -- if _G.tilesetIdCorrection ~= 0 then
-            tile.id = tile.id + _G.tilesetIdCorrection
             for __, frame in ipairs(tile.animation) do
-                local ti = frame.tileid + _G.tilesetIdCorrection
 
                 print("Origin frame id " .. frame.tileid)
-                frame.tileid = ti
 
                 if frame.tileid ~= tile.id then
-                    local donor = self:getChildren()[frame.tileid]
+                    local donor = self:getChildren()[frame.tileid + _G.tilesetIdCorrection]
                     print("Donor id " .. donor:getIndex())
-                    self:getChild(tile.id):addQuad(donor.quads[1])
+                    self:getChild(tile.id + _G.tilesetIdCorrection):addQuad(donor.quads[1])
 
                 end
                 print("New frame id " .. frame.tileid)
             end
-        -- end
 
-        local tid = tile.id
+        local tid = tile.id + _G.tilesetIdCorrection
         self:getChild(tid).animation = tile.animation
 
-        print("Add " .. tid .. " to " .. self.name)
+        print("Add " .. tid .. " to " .. self.name .. " tileset")
     end
 
     return self
@@ -96,18 +92,10 @@ function TileSet:tidGlobalToLocal(globalTid)
     return globalTid - self.firstgid + 1
 end
 
-function TileSet:update(dt)
-    for _, child in ipairs(self:getChildren()) do
-        child:update(dt)
-    end
-end
-
 function TileSet:drawTile(globalTid, xPos, yPos)
+    --print("TS draw gid " .. globalTid)
     local tid = self:tidGlobalToLocal(globalTid)
-    tile = self:getChildren()[tid]
+    --print("TS draw tid " .. tid)
+    local tile = self:getChildren()[tid]
     tile:draw(xPos, yPos)
-
-    --love.graphics.draw(self.texture, self.quads[tid], xPos, yPos)
 end
-
-return TileSet

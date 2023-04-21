@@ -71,5 +71,3 @@ function GameObject:draw(xPos, yPos)
         child:draw(self:getXPos() + xPos, self:getYPos() + yPos)
     end
 end
-
-return GameObject

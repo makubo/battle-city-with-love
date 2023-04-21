@@ -46,7 +46,6 @@ function Tile:new(model)
     end
 
     function obj:addQuad(q)
-        print("Add quad")
         table.insert(self.quads, q)
     end
 
@@ -63,7 +62,6 @@ function Tile:new(model)
     end
 
     function obj:setTexture(tex)
-        print("Set texture")
         self.texture = tex
     end
 
@@ -118,8 +116,8 @@ function Tile:draw(xPos, yPos)
     if self.animation ~= nil then
         --print("Tile draw frame" .. self.frame)
     end
-    --love.graphics.draw(self:getTexture(), self:getQuad(), xPos, yPos)
-    love.graphics.draw(self.texture, self.quads[self.frame], xPos, yPos)
+    love.graphics.draw(self:getTexture(), self:getQuad(), xPos, yPos)
+    --love.graphics.draw(self.texture, self.quads[self.frame], xPos, yPos)
 
 end
 
@@ -136,10 +134,10 @@ function Tile:update(dt)
         --print("Duration = " .. durationSec)
         --print("Timer = " .. self.timer)
         if self.timer >= durationSec then
-            -- local frame = self:getFrame() % #(self.animation) + 1
+             local frame = self:getFrame() % #(self.animation) + 1
             -- print("Set frame: " .. frame)
-            -- self:setFrame(frame)
-            self.frame = self.frame % #(self.animation) + 1
+             self:setFrame(frame)
+            --self.frame = self.frame % #(self.animation) + 1
             --print("Frame - " .. self.frame)
             print("Frame         - " .. self:getFrame())
             print("Frame Tile ID - " .. self.animation[self:getFrame()].tileid)
@@ -155,5 +153,3 @@ function Tile:update(dt)
         self.timer = timer
     end
 end
-
-return Tile
