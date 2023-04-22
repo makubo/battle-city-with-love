@@ -13,8 +13,13 @@ return {
   properties = {},
   tilesets = {
     {
-      name = "environment",
+      name = "env_wrapped",
       firstgid = 1,
+      filename = "gfx/env_wrapped.tsx"
+    },
+    {
+      name = "environment",
+      firstgid = 16,
       tilewidth = 8,
       tileheight = 8,
       spacing = 0,
@@ -56,11 +61,6 @@ return {
           }
         }
       }
-    },
-    {
-      name = "environment",
-      firstgid = 16,
-      filename = "gfx/environment.tsx"
     }
   },
   layers = {

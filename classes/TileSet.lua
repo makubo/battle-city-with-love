@@ -27,11 +27,11 @@ end
 
 function TileSet:loadTiles()
     local index = self.firstgid
-    for y = 0, (self.imageheight / self.tileheight) - 1 do
-        for x = 0, (self.imagewidth / self.tilewidth) - 1 do
+    for y = 0, self.tilecount / self.columns - 1 do
+        for x = 0, self.columns - 1 do
             local quad = love.graphics.newQuad(
-                x * self.tilewidth,
-                y * self.tileheight,
+                x * self.tilewidth + x * self.spacing + self.margin,
+                y * self.tileheight + y * self.spacing + self.margin,
                 self.tilewidth,
                 self.tileheight,
                 self.imagewidth,
