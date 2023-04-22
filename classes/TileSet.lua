@@ -1,30 +1,27 @@
-require("classes/Tools")
 require("classes/GameObject")
 require("classes/Tile")
 
-TileSet = {}
-
-extended(TileSet, GameObject)
+TileSet = GameObject:extend({})
 
 function TileSet:getObjectName()
     return "TileSet"
 end
 
-function TileSet:constructor()
+function TileSet:new(model)
 
-    local tileSet = {}
+    local tileSet = GameObject:new(model)
+    setmetatable(tileSet,self)
+    self.__index = self
 
-    if self.tiles ~= nil then
-        print("Animated tile count: " .. #self.tiles)
+    if tileSet.tiles ~= nil then
+        print("Animated tile count: " .. #tileSet.tiles)
     else
         print("Animated tile count: 0")
     end
 
-    self.texture = love.graphics.newImage(self.image)
-    self:loadTiles()
+    tileSet.texture = love.graphics.newImage(tileSet.image)
+    tileSet:loadTiles()
 
-    setmetatable(tileSet,self)
-    self.__index = self
     return tileSet
 end
 
@@ -58,6 +55,7 @@ end
 
 function TileSet:prepareAnimatedTiles()
     print("Tile count from proc: " .. #self.tiles)
+    -- Iterate tiles (animations) in tileset file (not object)
     for _, tile in ipairs(self.tiles) do
             for __, frame in ipairs(tile.animation) do
 
@@ -66,14 +64,15 @@ function TileSet:prepareAnimatedTiles()
                 if frame.tileid ~= tile.id then
                     local donor = self:getChildren()[frame.tileid + _G.tilesetIdCorrection]
                     print("Donor id " .. donor:getIndex())
-                    self:getChild(tile.id + _G.tilesetIdCorrection):addQuad(donor.quads[1])
+                    self:getChild(tile.id + _G.tilesetIdCorrection):addQuad(donor:getQuad(1))
 
                 end
                 print("New frame id " .. frame.tileid)
             end
 
         local tid = tile.id + _G.tilesetIdCorrection
-        self:getChild(tid).animation = tile.animation
+        --local t = 
+        self:getChild(tid):setAnimation(tile.animation)
 
         print("Add " .. tid .. " to " .. self.name .. " tileset")
     end

@@ -4,15 +4,20 @@ function GameObject:getObjectName()
     return "GameObject"
 end
 
+function GameObject:extend(class)
+    setmetatable(class,{__index = self})
+    return class
+end
+
 function GameObject:new(model)
 
-    local xPos, yPos, children
-
-    xPos = 0
-    yPos = 0
-    children = {}
-
     local obj = model or {}
+    setmetatable(obj, self)
+    self.__index = self
+
+    local xPos = 0
+    local yPos = 0
+    local children = {}
 
     function obj:setXPos(x)
         xPos = x
@@ -41,9 +46,6 @@ function GameObject:new(model)
     function obj:getChild(index)
         return children[index]
     end
-
-    setmetatable(obj, self)
-    self.__index = self
 
     return obj:constructor(model)
 end

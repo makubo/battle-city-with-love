@@ -1,8 +1,6 @@
-require("classes/Tools")
 require("classes/GameObject")
-Scene = {}
 
-extended(Scene, GameObject)
+Scene = GameObject:extend({})
 
 function Scene:getObjectName()
     return "Scene"

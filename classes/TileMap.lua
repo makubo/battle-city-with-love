@@ -1,10 +1,7 @@
-require("classes/Tools")
 require("classes/GameObject")
 require("classes/TileSet")
 
-TileMap = {}
-
-extended(TileMap, GameObject)
+TileMap = GameObject:extend({})
 
 TileMap.tilesets = {}
 TileMap.layers = {}
@@ -13,9 +10,13 @@ function TileMap:getObjectName()
     return "TileMap"
 end
 
-function TileMap:constructor()
+function TileMap:new(model)
 
-    for _, tileset in  ipairs(self.tilesets) do
+    local tileMap = GameObject:new(model)
+    setmetatable(tileMap, self)
+    self.__index = self
+
+    for _, tileset in  ipairs(tileMap.tilesets) do
         local ts = nil
         if tileset.filename ~= nil then
             print("Load tileset from file, fid = " .. tileset.firstgid)
@@ -29,10 +30,10 @@ function TileMap:constructor()
             print("Load embedded tileset, fid = " .. tileset.firstgid)
             ts = TileSet:new(tileset)
         end
-        self:addChild(ts)
+        tileMap:addChild(ts)
     end
 
-    return self
+    return tileMap
 end
 
 -- TODO: draw by layer method
