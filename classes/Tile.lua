@@ -1,15 +1,13 @@
+require("classes/GameObject")
+
 Tile = {}
+
+extended(Tile, GameObject)
 
 function Tile:new(model)
 
-    local xPos, yPos, children
-
-    xPos = 0
-    yPos = 0
-    children = {}
-
-    local obj = model or {}
-    obj.frame = 1
+    local obj = GameObject:new(model or {})
+    local frame = 1
     obj.timer = 0
     obj.quads = {}
     obj.texture = nil
@@ -17,40 +15,12 @@ function Tile:new(model)
 
     local index = nil
 
-    function obj:setXPos(x)
-        xPos = x
-    end
-
-    function obj:getXPos()
-        return xPos
-    end
-
-    function obj:setYPos(y)
-        yPos = y
-    end
-
-    function obj:getYPos()
-        return yPos
-    end
-
-    function obj:getChildren()
-        return children
-    end
-
-    function obj:addChild(object)
-        table.insert(children, object)
-    end
-
-    function obj:getChild(i)
-        return children[i]
-    end
-
     function obj:addQuad(q)
         table.insert(self.quads, q)
     end
 
     function obj:getQuad(i)
-        return self.quads[i or self.frame]
+        return self.quads[i or frame]
     end
 
     function obj:setIndex(i)
@@ -70,15 +40,15 @@ function Tile:new(model)
     end
 
     function obj:setFrame(fr)
-        self.frame = fr
+        frame = fr
     end
 
     function obj:getFrame()
-        return self.frame
+        return frame
     end
 
     function obj:setTimer(t)
-        self.frame = t
+        self.timer = t
     end
 
     function obj:getTimer()
@@ -106,18 +76,17 @@ end
 function Tile:draw(xPos, yPos)
     --print("Tile draw index " .. self:getIndex())
 
-    if xPos == nil then
-        xPos = 0
-    end
-    if yPos == nil then
-        yPos = 0
-    end
+    -- if xPos == nil then
+    --     xPos = 0
+    -- end
+    -- if yPos == nil then
+    --     yPos = 0
+    -- end
 
-    if self.animation ~= nil then
-        --print("Tile draw frame" .. self.frame)
-    end
-    love.graphics.draw(self:getTexture(), self:getQuad(), xPos, yPos)
-    --love.graphics.draw(self.texture, self.quads[self.frame], xPos, yPos)
+    -- if self.animation ~= nil then
+    --     --print("Tile draw frame" .. self.frame)
+    -- end
+    love.graphics.draw(self:getTexture(), self:getQuad(), xPos or 0, yPos or 0)
 
 end
 
@@ -126,11 +95,11 @@ function Tile:update(dt)
     if self.animation ~= nil then
     --if false then
         --print("Update index " .. self:getIndex())
-        --print("Frame number = " .. self.frame)
+        print("Frame number = " .. self:getFrame())
         --print("Frame number = " .. self.frame)
         --local frame = self.frame % #(self.animation) + 1
         --print("Anim ID = " .. frame)
-        local durationSec = self.animation[self.frame].duration / 1000
+        local durationSec = self.animation[self:getFrame()].duration / 1000
         --print("Duration = " .. durationSec)
         --print("Timer = " .. self.timer)
         if self.timer >= durationSec then
