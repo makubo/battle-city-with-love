@@ -1,4 +1,4 @@
-function love.conf(t)
+function love.conf(config)
     _G.initialWidth = 256
     -- PAL
     --_G.initialHeight = 240
@@ -7,15 +7,20 @@ function love.conf(t)
 
     _G.stagesDirectory = "stages"
 
-    t.version = "11.4"
+    -- IDs in tileset animation exported with "Tiled" counted from 0 while in tilemap from 1
+    _G.tilesetIdCorrection = 1
 
-    t.window.title = "Battle City with LÖVE"         -- The window title (string)
-    t.window.icon = "icon.png"                 -- Filepath to an image to use as the window's icon (string)
+    config.version = "11.4"
 
-    t.window.resizable = true
-    t.window.minwidth = _G.initialWidth
-    t.window.minheight = _G.initialHeight
-    t.window.width = t.window.minwidth
-    t.window.height = t.window.minheight
+    config.console = true
+
+    config.window.title = "Battle City with LÖVE"         -- The window title (string)
+    config.window.icon = "icon.png"                 -- Filepath to an image to use as the window's icon (string)
+
+    config.window.resizable = true
+    config.window.minwidth = _G.initialWidth
+    config.window.minheight = _G.initialHeight
+    config.window.width = config.window.minwidth
+    config.window.height = config.window.minheight
 
 end

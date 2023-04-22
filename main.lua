@@ -1,20 +1,36 @@
-require "classes/tiledmap"
+if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
+
+--if pcall(require, "lldebugger") then require("lldebugger").start() end
+--if pcall(require, "mobdebug") then require("mobdebug").start() end
+
+require "classes/TileMap"
+require "classes/Scene"
 
 local STAGE_LIST = {}
 local STAGE_INDEX = 3
+local STAGES = {}
 
 function love.load()
     -- set pixelate scale mode
     love.graphics.setDefaultFilter("nearest", "nearest")
+    -- TODO, set background as an object
+    love.graphics.setBackgroundColor( 99/255, 99/255, 99/255, 0 )
 
     local files = love.filesystem.getDirectoryItems(_G.stagesDirectory)
-    
-    for k, file in ipairs(files) do
+
+    for _, file in ipairs(files) do
+        local stageName = (string.gsub(file, ".lua", "", 1))
         table.insert(STAGE_LIST, (string.gsub(file, ".lua", "", 1)))
+        table.insert(STAGES, require(_G.stagesDirectory .. "/" .. stageName))
     end
 
     print("Stage count " .. #STAGE_LIST)
-    _G.map = loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX])
+    local map = TileMap:new(STAGES[STAGE_INDEX])
+    map:setXPos(16)
+    map:setYPos(8)
+
+    _G.scene = Scene:new()
+    _G.scene:addChild(map)
 end
 
 function love.draw()
@@ -23,37 +39,59 @@ function love.draw()
     local scaleX = width / _G.initialWidth
     local scaleY = height / _G.initialHeight
 
-    local scale = ( scaleX <= scaleY) and scaleX or scaleY
+    local scale = 1
+
+    -- Calculate coordinates for scene centration
+    local shiftX = 0
+    local shiftY = 0
+    if scaleX <= scaleY then
+        scale = scaleX
+        shiftX = 0
+        shiftY = ( height - _G.initialHeight * scale ) / scale / 2
+    else
+        scale = scaleY
+        shiftX = ( width - _G.initialWidth * scale ) / scale / 2
+        shiftY = 0
+    end
 
     love.graphics.scale(scale)
-    
-    love.graphics.setBackgroundColor( 99/255, 99/255, 99/255, 0 )
+    _G.scene:draw(shiftX, shiftY)
+    --_G.scene:draw()
 
-    _G.map:draw(16, 8)
-   
-    love.graphics.print(tostring(scaleX) .. " x " .. tostring(scaleY), 2, 2)
+    --love.graphics.print(tostring(scaleX) .. " x " .. tostring(scaleY), 2, 2)   
 end
 
 function love.update(dt)
-    _G.map:update(dt)
+    _G.scene:update(dt)
 end
 
 function love.keypressed(key)
     print("Pressed key: " .. key)
     nextStage()
 
-    -- if key == "escape" then
-    --    love.event.quit()
-    -- end
+    if key == "escape" then
+       love.event.quit()
+    end
 end
 
 function nextStage()
-    if STAGE_INDEX >= #STAGE_LIST then
+    if STAGE_INDEX >= #STAGES then
         STAGE_INDEX = 1
     else
         STAGE_INDEX = STAGE_INDEX + 1
     end
 
-    print("Load stage " .. STAGE_INDEX .. " " .. STAGE_LIST[STAGE_INDEX])
-    _G.map = loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]) 
+    --_G.scene:getChildren()[1] = nil
+
+    print("Load stage " .. STAGE_INDEX .. " (" .. STAGE_LIST[STAGE_INDEX] .. ")")
+
+    --local map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    local map = TileMap:new(STAGES[STAGE_INDEX])
+    map:setXPos(16)
+    map:setYPos(8)
+
+    _G.scene:getChildren()[1] = map
+    --TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
+    
+    --loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]) 
 end

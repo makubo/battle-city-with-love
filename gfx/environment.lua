@@ -39,7 +39,7 @@ return {
         },
         {
           tileid = 10,
-          duration = 800
+          duration = 200
         }
       }
     }
