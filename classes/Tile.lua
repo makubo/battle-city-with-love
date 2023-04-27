@@ -1,6 +1,10 @@
-require("classes/GameObject")
+require("classes.GameObject")
 
 Tile = GameObject:extend({})
+
+function Tile:getObjectName()
+    return "Tile"
+end
 
 function Tile:new(model)
 
@@ -57,7 +61,7 @@ function Tile:new(model)
     end
 
     function tile:setAnimation(ani)
-        print("Add animation with " .. #ani .. " frames")
+        --print("Add animation with " .. #ani .. " frames")
         animation = ani
     end
 
@@ -80,32 +84,16 @@ function Tile:draw(xPos, yPos)
 end
 
 function Tile:update(dt)
-    --print("Tile update")
     if self:getAnimation() ~= nil then
-    --if false then
-        --print("Update index " .. self:getIndex())
-        --print("Frame number = " .. self:getFrame())
-        --print("Frame number = " .. self.frame)
-        --local frame = self.frame % #(self.animation) + 1
-        --print("Anim ID = " .. frame)
         local durationSec = self:getAnimation()[self:getFrame()].duration / 1000
-        --print("Duration = " .. durationSec)
-        --print("Timer = " .. self.timer)
-        --if self.timer >= durationSec then
         if self:getTimer() >= durationSec then
-             local frame = self:getFrame() % #(self:getAnimation()) + 1
-            -- print("Set frame: " .. frame)
-             self:setFrame(frame)
-            --self.frame = self.frame % #(self.animation) + 1
-            --print("Frame - " .. self.frame)
-            print("Frame         - " .. self:getFrame())
-            print("Frame Tile ID - " .. self:getAnimation()[self:getFrame()].tileid)
-            print("Frame Time    - " .. durationSec)
-            print("")
-            --animTile.durationSec = 
+            local frame = self:getFrame() % #(self:getAnimation()) + 1
+            self:setFrame(frame)
+            --print("Frame         - " .. self:getFrame())
+            --print("Frame Tile ID - " .. self:getAnimation()[self:getFrame()].tileid)
+            --print("Frame Time    - " .. durationSec)
+            --print("")
             self:setTimer(self:getTimer() - durationSec)
-            --self:setTimer(0)
-            --self.timer = self:getTimer() - durationSec
         end
         local timer = self:getTimer() + dt
         self:setTimer(timer)

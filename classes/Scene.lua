@@ -1,4 +1,4 @@
-require("classes/GameObject")
+require("classes.GameObject")
 
 Scene = GameObject:extend({})
 

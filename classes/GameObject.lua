@@ -1,3 +1,7 @@
+require("classes.Tools")
+
+local tablex = require("pl.tablex")
+
 GameObject = {}
 
 function GameObject:getObjectName()
@@ -15,44 +19,74 @@ function GameObject:new(model)
     setmetatable(obj, self)
     self.__index = self
 
-    local xPos = 0
-    local yPos = 0
-    local children = {}
+    local _xPos = 0
+    local _yPos = 0
+    local _layerId = 0
+    local _children = {}
 
     function obj:setXPos(x)
-        xPos = x
+        _xPos = x
     end
 
     function obj:getXPos()
-        return xPos
+        return _xPos
     end
 
     function obj:setYPos(y)
-        yPos = y
+        _yPos = y
     end
 
     function obj:getYPos()
-        return yPos
+        return _yPos
+    end
+
+    function obj:setLayerID(id)
+        _layerId = id
+    end
+
+    function obj:getLayerID()
+        return _layerId
     end
 
     function obj:getChildren()
-        return children
+        return _children
     end
 
-    function obj:addChild(object)
-        table.insert(children, object)
+    function obj:addChild(child)
+        table.insert(_children, child)
+        return child:getLayerID()
     end
 
     function obj:getChild(index)
-        return children[index]
+        return _children[index]
     end
 
-    return obj:constructor(model)
+    return obj
 end
 
--- public constructor method for being redefined
-function GameObject:constructor(...)
-    return self
+function GameObject:getLayers()
+    local layers = {}
+    for _, child in ipairs(self:getChildren()) do
+        tablex.insertvalues(layers, child:getLayers())
+    end
+
+    -- Layers with ID lower than 1 shouldn't be drawn
+    if self:getLayerID() > 0 then
+        table.insert(layers, self:getLayerID())
+    end
+
+    -- Only root objects must have Layer ID -1
+    -- This part of code finalize the list of layers
+    if self:getLayerID() == -1 then
+        layers = removeDuplicateTableValues(layers)
+        local sortedLayers = {}
+        for _, v in tablex.sortv(layers) do
+            table.insert(sortedLayers, v)
+        end
+        layers = sortedLayers
+    end
+
+    return layers
 end
 
 function GameObject:update(dt)
@@ -62,7 +96,7 @@ function GameObject:update(dt)
     end
 end
 
-function GameObject:draw(xPos, yPos)
+function GameObject:draw(layerID, xPos, yPos)
     if xPos == nil then
         xPos = 0
     end
@@ -70,6 +104,6 @@ function GameObject:draw(xPos, yPos)
         yPos = 0
     end
     for _, child in ipairs(self:getChildren()) do
-        child:draw(self:getXPos() + xPos, self:getYPos() + yPos)
+        child:draw(layerID, self:getXPos() + xPos, self:getYPos() + yPos)
     end
 end
