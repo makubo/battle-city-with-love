@@ -1,10 +1,12 @@
-if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
+if pcall(require, "developement") then
+    print("Developement run")
+end
 
---if pcall(require, "lldebugger") then require("lldebugger").start() end
---if pcall(require, "mobdebug") then require("mobdebug").start() end
+--lib/penlight/lua/pl/utils.lua
 
-require "classes/TileMap"
-require "classes/Scene"
+require "classes.TileMap"
+require "classes.Scene"
+require "classes.Rectangle"
 
 local STAGE_LIST = {}
 local STAGE_INDEX = 3
@@ -13,8 +15,6 @@ local STAGES = {}
 function love.load()
     -- set pixelate scale mode
     love.graphics.setDefaultFilter("nearest", "nearest")
-    -- TODO, set background as an object
-    love.graphics.setBackgroundColor( 99/255, 99/255, 99/255, 0 )
 
     local files = love.filesystem.getDirectoryItems(_G.stagesDirectory)
 
@@ -31,6 +31,19 @@ function love.load()
 
     _G.scene = Scene:new()
     _G.scene:addChild(map)
+
+    -- Set scene as root object
+    _G.scene:setLayerID(-1)
+
+    local background = Rectangle:new(0, 0, _G.initialWidth, _G.initialHeight)
+    background:setColor({99/255, 99/255, 99/255})
+    background:setLayerID(1)
+
+    _G.scene:addChild(background)
+
+    require("pl.tablex")
+
+    _G.layers = _G.scene:getLayers()
 end
 
 function love.draw()
@@ -55,10 +68,10 @@ function love.draw()
     end
 
     love.graphics.scale(scale)
-    _G.scene:draw(shiftX, shiftY)
-    --_G.scene:draw()
 
-    --love.graphics.print(tostring(scaleX) .. " x " .. tostring(scaleY), 2, 2)   
+    for _, layer in ipairs(_G.layers) do
+        _G.scene:draw(layer, shiftX, shiftY)
+    end
 end
 
 function love.update(dt)
@@ -67,7 +80,9 @@ end
 
 function love.keypressed(key)
     print("Pressed key: " .. key)
-    nextStage()
+    if key == "right" then
+        nextStage()
+     end
 
     if key == "escape" then
        love.event.quit()
@@ -81,17 +96,12 @@ function nextStage()
         STAGE_INDEX = STAGE_INDEX + 1
     end
 
-    --_G.scene:getChildren()[1] = nil
-
     print("Load stage " .. STAGE_INDEX .. " (" .. STAGE_LIST[STAGE_INDEX] .. ")")
 
-    --local map = TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
     local map = TileMap:new(STAGES[STAGE_INDEX])
     map:setXPos(16)
     map:setYPos(8)
 
     _G.scene:getChildren()[1] = map
-    --TileMap:new(require(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]))
-    
-    --loadTiledMap(_G.stagesDirectory .. "/" .. STAGE_LIST[STAGE_INDEX]) 
+    _G.layers = _G.scene:getLayers()
 end
