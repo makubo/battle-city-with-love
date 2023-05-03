@@ -15,52 +15,8 @@ return {
     {
       name = "environment",
       firstgid = 1,
-      tilewidth = 8,
-      tileheight = 8,
-      spacing = 0,
-      margin = 0,
-      columns = 5,
-      image = "gfx/environment.png",
-      imagewidth = 40,
-      imageheight = 24,
-      transparentcolor = "#000001",
-      objectalignment = "unspecified",
-      tileoffset = {
-        x = 0,
-        y = 0
-      },
-      grid = {
-        orientation = "orthogonal",
-        width = 8,
-        height = 8
-      },
-      properties = {},
-      wangsets = {},
-      tilecount = 15,
-      tiles = {
-        {
-          id = 11,
-          animation = {
-            {
-              tileid = 11,
-              duration = 800
-            },
-            {
-              tileid = 12,
-              duration = 800
-            },
-            {
-              tileid = 10,
-              duration = 200
-            }
-          }
-        }
-      }
-    },
-    {
-      name = "environment",
-      firstgid = 16,
-      filename = "gfx/environment.tsx"
+      filename = "gfx/environment.tsx",
+      exportfilename = "gfx/environment.lua"
     }
   },
   layers = {
@@ -82,7 +38,7 @@ return {
       encoding = "lua",
       data = {
         15, 15, 15,
-        15, 27, 15,
+        15, 12, 15,
         15, 15, 12
       }
     },
@@ -94,7 +50,7 @@ return {
       height = 3,
       id = 20,
       name = "Buildings",
-      visible = false,
+      visible = true,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
@@ -116,7 +72,7 @@ return {
       height = 3,
       id = 30,
       name = "Trees",
-      visible = false,
+      visible = true,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
@@ -126,7 +82,7 @@ return {
       encoding = "lua",
       data = {
         7, 0, 0,
-        0, 29, 0,
+        0, 14, 0,
         0, 0, 0
       }
     }

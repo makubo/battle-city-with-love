@@ -8,8 +8,10 @@ require "classes.TileMap"
 require "classes.Scene"
 require "classes.Rectangle"
 
+require "math"
+
 local STAGE_LIST = {}
-local STAGE_INDEX = 3
+local STAGE_INDEX = 2
 local STAGES = {}
 
 function love.load()
@@ -44,6 +46,22 @@ function love.load()
     require("pl.tablex")
 
     _G.layers = _G.scene:getLayers()
+
+    local wf = require("windfield")
+
+    _G.world = wf.newWorld()
+    player = world:newCircleCollider(32, 0, 7.75)
+    --world:newBSGRectangleCollider(32, 0, 15, 15, 2)
+    player:setFixedRotation(true)
+
+    -- wall1 = world:newRectangleCollider(0,16, 16, 32)
+    -- wall1:setType("static")
+    -- wall2 = world:newRectangleCollider(32,0, 16, 32)
+    -- wall2:setType("static")
+
+    map:loadObjects()
+
+    _G.playerVelocity = { x = 0, y = 0}
 end
 
 function love.draw()
@@ -72,17 +90,64 @@ function love.draw()
     for _, layer in ipairs(_G.layers) do
         _G.scene:draw(layer, shiftX, shiftY)
     end
+    world:draw()
 end
 
 function love.update(dt)
+
+    local pv = { x = 0 , y = 0}
+
+    if love.keyboard.isDown("right") then
+        pv.x = 50
+    elseif love.keyboard.isDown("left") then
+        pv.x = -50
+    elseif love.keyboard.isDown("up") then
+        pv.y = -50
+    elseif love.keyboard.isDown("down") then
+        pv.y = 50
+    end
+
+    if pv.x ~= _G.playerVelocity.x or pv.y ~= _G.playerVelocity.y then
+        if pv.x == 0 and pv.y == 0 then
+            print("Stop")
+        else
+            print("Change direction")
+            local x = player:getX()
+            local y = player:getY()
+
+            print( math.abs(x % 8))
+
+
+            local dx = (x) % 8
+            local dy = (y - 0.25) % 8
+
+            if dx <= 8/2 then 
+                player:setX(x - dx)
+            else
+                player:setX(x - dx + 8)
+            end
+
+            if dy <= 8/2 then 
+                player:setY(y - dy + 0.25)
+            else
+                player:setY(y - dy + 8 + 0.25)
+            end
+        end
+
+        _G.playerVelocity.x, _G.playerVelocity.y = pv.x, pv.y    
+    end
+
+    player:setLinearVelocity(_G.playerVelocity.x, _G.playerVelocity.y)
+
     _G.scene:update(dt)
+    world:update(dt)
 end
 
 function love.keypressed(key)
     print("Pressed key: " .. key)
-    if key == "right" then
+    if key == "return" then
         nextStage()
-     end
+    end
 
     if key == "escape" then
        love.event.quit()
@@ -101,6 +166,8 @@ function nextStage()
     local map = TileMap:new(STAGES[STAGE_INDEX])
     map:setXPos(16)
     map:setYPos(8)
+
+    map:loadObjects()
 
     _G.scene:getChildren()[1] = map
     _G.layers = _G.scene:getLayers()
