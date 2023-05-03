@@ -40,14 +40,13 @@ function TileMap:new(model)
 end
 
 function TileMap:loadObjects()
-    print("Load oobjects")
+    local objects = {}
     for _, layer in ipairs(self.layers) do
         for y = 0, layer.height - 1 do
             for x = 0, layer.width -1 do
                 local index = (x + y * layer.width) + 1
                 local gid = layer.data[index]
                 if gid ~= 0 then
-
                     for i, tileset in ipairs(self:getChildren()) do
                         if tileset:isGlobalTidIn(gid) then
 
@@ -56,11 +55,19 @@ function TileMap:loadObjects()
 
                             local tile = tileset:getTileByGID(gid)
 
-                            for __, obj in ipairs(tile:getObjects()) do
-                                if obj.shape == "rectangle" then
-                                    local col = _G.world:newRectangleCollider(self:getXPos() + xx + obj.x, self:getYPos() + yy + obj.y, obj.width, obj.height)
-                                    col:setType("static")
+                            if #tile:getObjects() > 0 then
+                                local object = {
+                                    tileMap = self,
+                                    layer = layer.id,
+                                    index = index,
+                                    mapPosX = xx,
+                                    mapPosY = yy,
+                                    colliders = {}
+                                }
+                                for __, obj in ipairs(tile:getObjects()) do
+                                    table.insert(object.colliders, obj)
                                 end
+                                table.insert(objects, object)
                             end
                         end
                     end
@@ -68,6 +75,7 @@ function TileMap:loadObjects()
             end
         end
     end
+    return objects
 end
 
 function TileMap:getLayers()

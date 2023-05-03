@@ -11,7 +11,7 @@ require "classes.Rectangle"
 require "math"
 
 local STAGE_LIST = {}
-local STAGE_INDEX = 2
+local STAGE_INDEX = 3
 local STAGES = {}
 
 function love.load()
@@ -59,7 +59,7 @@ function love.load()
     -- wall2 = world:newRectangleCollider(32,0, 16, 32)
     -- wall2:setType("static")
 
-    map:loadObjects()
+    _G.colliders = createColliders(map:loadObjects())
 
     _G.playerVelocity = { x = 0, y = 0}
 end
@@ -167,8 +167,36 @@ function nextStage()
     map:setXPos(16)
     map:setYPos(8)
 
-    map:loadObjects()
+    _G.colliders = createColliders(map:loadObjects())
 
     _G.scene:getChildren()[1] = map
     _G.layers = _G.scene:getLayers()
 end
+
+function createColliders(objects)
+    local colliders = {}
+    for _, obj in ipairs(objects) do
+        --table.insert(object.colliders, obj)
+        for __, col in ipairs(obj.colliders) do
+            if col.shape == "rectangle" then
+                local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height)
+                coll:setType("static")
+                coll:setObject(obj)
+
+                table.insert(colliders, coll)
+            end
+        end
+    end
+    return colliders
+end
+
+-- function updateColliders(colliders)
+--     for _, col in ipairs(colliders) do
+--         col:setPosition(col:getObject().tileMap:getXPos() + (col:getObject().mapPosX + col.x, (col:getObject().tileMap:getYPos() + (col:getObject().mapPosY + col.y)
+--         -- call:getObject()
+--         --     if col.shape == "rectangle" then
+--         --         local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height)
+--         --         coll:setType("static")
+--         --     end
+--     end
+-- end
