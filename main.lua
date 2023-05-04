@@ -7,6 +7,7 @@ end
 require "classes.TileMap"
 require "classes.Scene"
 require "classes.Rectangle"
+Camera = require("hump.camera")
 
 require "math"
 
@@ -15,6 +16,8 @@ local STAGE_INDEX = 3
 local STAGES = {}
 
 function love.load()
+
+    _G.camera = Camera(_G.initialWidth / 2,_G.initialHeight / 2)
     -- set pixelate scale mode
     love.graphics.setDefaultFilter("nearest", "nearest")
 
@@ -50,14 +53,8 @@ function love.load()
     local wf = require("windfield")
 
     _G.world = wf.newWorld()
-    player = world:newCircleCollider(32, 0, 7.75)
-    --world:newBSGRectangleCollider(32, 0, 15, 15, 2)
+    player = world:newCircleCollider(32, 0, 7.5)
     player:setFixedRotation(true)
-
-    -- wall1 = world:newRectangleCollider(0,16, 16, 32)
-    -- wall1:setType("static")
-    -- wall2 = world:newRectangleCollider(32,0, 16, 32)
-    -- wall2:setType("static")
 
     _G.colliders = createColliders(map:loadObjects())
 
@@ -65,36 +62,18 @@ function love.load()
 end
 
 function love.draw()
-    local width, height = love.graphics.getDimensions()
+    camera:zoomTo(scaleToInscribedSize(_G.initialWidth,_G.initialHeight))
 
-    local scaleX = width / _G.initialWidth
-    local scaleY = height / _G.initialHeight
-
-    local scale = 1
-
-    -- Calculate coordinates for scene centration
-    local shiftX = 0
-    local shiftY = 0
-    if scaleX <= scaleY then
-        scale = scaleX
-        shiftX = 0
-        shiftY = ( height - _G.initialHeight * scale ) / scale / 2
-    else
-        scale = scaleY
-        shiftX = ( width - _G.initialWidth * scale ) / scale / 2
-        shiftY = 0
-    end
-
-    love.graphics.scale(scale)
-
-    for _, layer in ipairs(_G.layers) do
-        _G.scene:draw(layer, shiftX, shiftY)
-    end
-    world:draw()
+    camera:attach()
+        for _, layer in ipairs(_G.layers) do
+            _G.scene:draw(layer)
+            --, shiftX, shiftY)
+        end
+        world:draw()
+    camera:detach()
 end
 
 function love.update(dt)
-
     local pv = { x = 0 , y = 0}
 
     if love.keyboard.isDown("right") then
@@ -139,6 +118,8 @@ function love.update(dt)
 
     player:setLinearVelocity(_G.playerVelocity.x, _G.playerVelocity.y)
 
+    updateColliders(_G.colliders)
+
     _G.scene:update(dt)
     world:update(dt)
 end
@@ -167,6 +148,8 @@ function nextStage()
     map:setXPos(16)
     map:setYPos(8)
 
+    destroyColliders(_G.colliders)
+
     _G.colliders = createColliders(map:loadObjects())
 
     _G.scene:getChildren()[1] = map
@@ -177,10 +160,13 @@ function createColliders(objects)
     local colliders = {}
     for _, obj in ipairs(objects) do
         --table.insert(object.colliders, obj)
-        for __, col in ipairs(obj.colliders) do
+        for __, col in ipairs(obj.objects) do
             if col.shape == "rectangle" then
                 local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height)
                 coll:setType("static")
+
+                -- make recursion
+                col.collider = coll
                 coll:setObject(obj)
 
                 table.insert(colliders, coll)
@@ -190,13 +176,57 @@ function createColliders(objects)
     return colliders
 end
 
--- function updateColliders(colliders)
---     for _, col in ipairs(colliders) do
---         col:setPosition(col:getObject().tileMap:getXPos() + (col:getObject().mapPosX + col.x, (col:getObject().tileMap:getYPos() + (col:getObject().mapPosY + col.y)
---         -- call:getObject()
---         --     if col.shape == "rectangle" then
---         --         local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height)
---         --         coll:setType("static")
---         --     end
---     end
--- end
+function updateColliders(colliders)
+    --print("Update coll")
+    for _, col in ipairs(colliders) do
+
+        for __, object in ipairs(col:getObject().objects) do
+            -- print("Update coll")
+            -- print(object.collider)
+            -- print(col)
+            if col.__tostring == object.__tostring then
+            --if col == object then
+                --col:setPosition(col:getObject().tileMap:getXPos() + (col:getObject().mapPosX + col.x, (col:getObject().tileMap:getYPos() + (col:getObject().mapPosY + col.y)
+                -- print("Found")
+            else
+                -- print("NO Found")
+            end
+        end
+        --col:setPosition(col:getObject().tileMap:getXPos() + (col:getObject().mapPosX + col.x, (col:getObject().tileMap:getYPos() + (col:getObject().mapPosY + col.y)
+        -- call:getObject()
+        --     if col.shape == "rectangle" then
+        --         local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height)
+        --         coll:setType("static")
+        --     end
+    end
+end
+
+function scaleToInscribedSize(w,h)
+    local width, height = love.graphics.getDimensions()
+
+    local scaleX = width / w
+    local scaleY = height / h
+
+    local scale = 1
+
+    -- Calculate coordinates for scene centration
+    local shiftX = 0
+    local shiftY = 0
+    if scaleX <= scaleY then
+        scale = scaleX
+        shiftX = 0
+        shiftY = ( height - h * scale ) / scale / 2
+    else
+        scale = scaleY
+        shiftX = ( width - w * scale ) / scale / 2
+        shiftY = 0
+    end
+
+    return scale
+end
+
+function destroyColliders(cols)
+    for _,col in ipairs(cols) do
+        col:destroy()
+    end
+end

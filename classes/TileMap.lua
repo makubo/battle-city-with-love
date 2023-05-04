@@ -56,17 +56,17 @@ function TileMap:loadObjects()
                             local tile = tileset:getTileByGID(gid)
 
                             if #tile:getObjects() > 0 then
-                                local object = {
-                                    tileMap = self,
-                                    layer = layer.id,
-                                    index = index,
-                                    mapPosX = xx,
-                                    mapPosY = yy,
-                                    colliders = {}
-                                }
-                                for __, obj in ipairs(tile:getObjects()) do
-                                    table.insert(object.colliders, obj)
-                                end
+                                --for __, obj in ipairs(tile:getObjects()) do
+                                    local object = {
+                                        tileMap = self,
+                                        layer = layer.id, -- on what layer
+                                        index = index,    -- on what position
+                                        mapPosX = xx,
+                                        mapPosY = yy,
+                                        objects = tile:getObjects()
+                                    }
+                                    --table.insert(object.colliders, obj)
+                                --end
                                 table.insert(objects, object)
                             end
                         end
