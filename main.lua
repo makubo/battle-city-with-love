@@ -175,7 +175,21 @@ function createColliders(objects)
         --table.insert(object.colliders, obj)
         for __, col in ipairs(obj.objects) do
             if col.shape == "rectangle" then
-                local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height)
+                local coll = _G.world:newRectangleCollider(obj.tileMap:getXPos() + obj.mapPosX + col.x, obj.tileMap:getYPos() + obj.mapPosY + col.y, col.width, col.height, col.type)
+                coll:setType("static")
+
+                -- make recursion
+                col.collider = coll
+                coll:setObject(obj)
+
+                table.insert(colliders, coll)
+            elseif col.shape == "polygon" then
+                local vertices = {}
+                for ___, pol in ipairs(col.polygon) do
+                    table.insert(vertices, obj.tileMap:getXPos() + obj.mapPosX + pol.x)
+                    table.insert(vertices, obj.tileMap:getYPos() + obj.mapPosY + pol.y)
+                end
+                local coll = _G.world:newPolygonCollider(vertices, col.type)
                 coll:setType("static")
 
                 -- make recursion
