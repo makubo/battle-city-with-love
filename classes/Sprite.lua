@@ -17,7 +17,6 @@ function Sprite:new(model)
     local quads = {}
     local texture = nil
     local animation = nil
-    local objects = {}
 
     local index = nil
 
@@ -75,18 +74,6 @@ function Sprite:new(model)
             return true
         end
         return false
-    end
-
-    function sprite:addObject(o)
-        table.insert(objects, o)
-    end
-
-    function sprite:getObject(i)
-        return objects[i or 1]
-    end
-
-    function sprite:getObjects()
-        return objects
     end
 
     return sprite
