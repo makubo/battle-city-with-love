@@ -53,8 +53,19 @@ function love.load()
     local wf = require("windfield")
 
     _G.world = wf.newWorld()
-    player = world:newCircleCollider(32, 0, 7.5)
+    player = world:newCircleCollider(0, 0, 7.5)
     player:setFixedRotation(true)
+
+    _G.borderColliders = createBorderColliders(map)
+    -- topBorder = world:newLineCollider(16, 8, 16 + map:getPixelWidth(), 8)
+    -- bottomBorder = world:newLineCollider(16, 8 + map:getPixelHeight(),  16 + map:getPixelWidth(), 8 + map:getPixelHeight())
+    -- leftBorder = world:newLineCollider(16, 8, 16, 8 + map:getPixelHeight())
+    -- rightBorder = world:newLineCollider(16 + map:getPixelWidth(), 8, 16 + map:getPixelWidth(), 8 + map:getPixelHeight())
+
+    -- topBorder:setType("static")
+    -- bottomBorder:setType("static")
+    -- leftBorder:setType("static")
+    -- rightBorder:setType("static")
 
     _G.colliders = createColliders(map:loadObjects())
 
@@ -98,7 +109,7 @@ function love.update(dt)
 
 
             local dx = (x) % 8
-            local dy = (y - 0.25) % 8
+            local dy = (y) % 8
 
             if dx <= 8/2 then 
                 player:setX(x - dx)
@@ -107,9 +118,9 @@ function love.update(dt)
             end
 
             if dy <= 8/2 then 
-                player:setY(y - dy + 0.25)
+                player:setY(y - dy)
             else
-                player:setY(y - dy + 8 + 0.25)
+                player:setY(y - dy + 8)
             end
         end
 
@@ -149,7 +160,9 @@ function nextStage()
     map:setYPos(8)
 
     destroyColliders(_G.colliders)
+    destroyBorderColliders(_G.borderColliders)
 
+    _G.borderColliders = createBorderColliders(map)
     _G.colliders = createColliders(map:loadObjects())
 
     _G.scene:getChildren()[1] = map
@@ -209,17 +222,10 @@ function scaleToInscribedSize(w,h)
 
     local scale = 1
 
-    -- Calculate coordinates for scene centration
-    local shiftX = 0
-    local shiftY = 0
     if scaleX <= scaleY then
         scale = scaleX
-        shiftX = 0
-        shiftY = ( height - h * scale ) / scale / 2
     else
         scale = scaleY
-        shiftX = ( width - w * scale ) / scale / 2
-        shiftY = 0
     end
 
     return scale
@@ -229,4 +235,27 @@ function destroyColliders(cols)
     for _,col in ipairs(cols) do
         col:destroy()
     end
+end
+
+function destroyBorderColliders(borders)
+    borders.top:destroy()
+    borders.bottom:destroy()
+    borders.left:destroy()
+    borders.right:destroy()
+end
+
+function createBorderColliders(map)
+    local borders = {
+        top    = world:newLineCollider(map:getXPos(), map:getYPos(), map:getXPos() + map:getPixelWidth(), map:getYPos()),
+        bottom = world:newLineCollider(map:getXPos(), map:getYPos() + map:getPixelHeight(),  map:getXPos() + map:getPixelWidth(), map:getYPos() + map:getPixelHeight()),
+        left   = world:newLineCollider(map:getXPos(), map:getYPos(), map:getXPos(), map:getYPos() + map:getPixelHeight()),
+        right  = world:newLineCollider(map:getXPos() + map:getPixelWidth(), map:getYPos(), map:getXPos() + map:getPixelWidth(), map:getYPos() + map:getPixelHeight()),
+    }
+
+    borders.top:setType("static")
+    borders.bottom:setType("static")
+    borders.left:setType("static")
+    borders.right:setType("static")
+
+    return borders
 end

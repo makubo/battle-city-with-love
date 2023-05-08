@@ -113,3 +113,11 @@ function TileMap:draw(layerID, xPos, yPos)
         end
     end
 end
+
+function TileMap:getPixelHeight()
+    return self.height * self.tileheight
+end
+
+function TileMap:getPixelWidth()
+    return self.width * self.tilewidth
+end

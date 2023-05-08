@@ -1,7 +1,3 @@
-function extended(child, parent)
-    setmetatable(child,{__index = parent}) 
-end
-
 -- Thanx https://stackoverflow.com/a/20067270
 function removeDuplicateTableValues(table)
     local hash = {}
