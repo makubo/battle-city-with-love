@@ -46,15 +46,26 @@ function love.load()
 
     _G.scene:addChild(background)
 
-    require("pl.tablex")
+    --require("pl.tablex")
+
+    tanksTS = TileSet:new(require("gfx.tanks"))
+
+    player = {}
+    player[1] = require("player")
+
+    player[1]:setLayerID(15)
+
+    _G.scene:addChild(player[1])
+
 
     _G.layers = _G.scene:getLayers()
 
     local wf = require("windfield")
 
     _G.world = wf.newWorld()
-    player = world:newCircleCollider(0, 0, 7.5)
-    player:setFixedRotation(true)
+
+    playerColl = world:newCircleCollider(0, 0, 7.5)
+    playerColl:setFixedRotation(true)
 
     _G.borderColliders = createBorderColliders(map)
     -- topBorder = world:newLineCollider(16, 8, 16 + map:getPixelWidth(), 8)
@@ -80,7 +91,7 @@ function love.draw()
             _G.scene:draw(layer)
             --, shiftX, shiftY)
         end
-        world:draw()
+        --world:draw()
     camera:detach()
 end
 
@@ -102,8 +113,8 @@ function love.update(dt)
             print("Stop")
         else
             print("Change direction")
-            local x = player:getX()
-            local y = player:getY()
+            local x = playerColl:getX()
+            local y = playerColl:getY()
 
             print( math.abs(x % 8))
 
@@ -112,23 +123,25 @@ function love.update(dt)
             local dy = (y) % 8
 
             if dx <= 8/2 then 
-                player:setX(x - dx)
+                playerColl:setX(x - dx)
             else
-                player:setX(x - dx + 8)
+                playerColl:setX(x - dx + 8)
             end
 
             if dy <= 8/2 then 
-                player:setY(y - dy)
+                playerColl:setY(y - dy)
             else
-                player:setY(y - dy + 8)
+                playerColl:setY(y - dy + 8)
             end
         end
 
         _G.playerVelocity.x, _G.playerVelocity.y = pv.x, pv.y    
     end
 
-    player:setLinearVelocity(_G.playerVelocity.x, _G.playerVelocity.y)
+    playerColl:setLinearVelocity(_G.playerVelocity.x, _G.playerVelocity.y)
 
+    player[1]:setXPos(math.floor(playerColl:getX() - playerColl:getRadius()))
+    player[1]:setYPos(math.floor(playerColl:getY() - playerColl:getRadius()))
     updateColliders(_G.colliders)
 
     _G.scene:update(dt)
