@@ -46,10 +46,6 @@ function love.load()
 
     _G.scene:addChild(background)
 
-    --require("pl.tablex")
-
-    tanksTS = TileSet:new(require("gfx.tanks"))
-
     player = {}
     player[1] = require("player")
 
@@ -84,6 +80,7 @@ function love.load()
 end
 
 function love.draw()
+    --print("draw function")
     camera:zoomTo(scaleToInscribedSize(_G.initialWidth,_G.initialHeight))
 
     camera:attach()
@@ -100,12 +97,16 @@ function love.update(dt)
 
     if love.keyboard.isDown("right") then
         pv.x = 50
+        player[1]:turn("right")
     elseif love.keyboard.isDown("left") then
         pv.x = -50
+        player[1]:turn("left")
     elseif love.keyboard.isDown("up") then
         pv.y = -50
+        player[1]:turn("up")
     elseif love.keyboard.isDown("down") then
         pv.y = 50
+        player[1]:turn("down")
     end
 
     if pv.x ~= _G.playerVelocity.x or pv.y ~= _G.playerVelocity.y then

@@ -108,5 +108,5 @@ function TileSet:drawTile(globalTid, xPos, yPos)
     local tid = self:tidGlobalToLocal(globalTid)
     --print("TS draw tid " .. tid)
     local tile = self:getChildren()[tid]
-    tile:draw(xPos, yPos)
+    tile:draw(0, xPos, yPos)
 end

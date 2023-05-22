@@ -79,8 +79,10 @@ function Sprite:new(model)
     return sprite
 end
 
-function Sprite:draw(xPos, yPos)
-    love.graphics.draw(self:getTexture(), self:getQuad(), xPos or 0, yPos or 0)
+function Sprite:draw(layerID, xPos, yPos)
+    if self:getLayerID() == layerID then
+        love.graphics.draw(self:getTexture(), self:getQuad(), xPos or 0, yPos or 0)    
+    end
 end
 
 function Sprite:update(dt)
@@ -93,6 +95,5 @@ function Sprite:update(dt)
         end
         local timer = self:getTimer() + dt
         self:setTimer(timer)
-        --self.timer = timer
     end
 end

@@ -54,7 +54,7 @@ function GameObject:new(model)
 
     function obj:addChild(child)
         table.insert(_children, child)
-        return child:getLayerID()
+        return #_children
     end
 
     function obj:getChild(index)
