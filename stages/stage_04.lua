@@ -13,7 +13,7 @@ return {
   properties = {},
   tilesets = {
     {
-      name = "env_wrapped",
+      name = "environment",
       firstgid = 1,
       filename = "gfx/env_wrapped.tsx"
     },
@@ -70,7 +70,7 @@ return {
       y = 0,
       width = 26,
       height = 26,
-      id = 2,
+      id = 10,
       name = "Ground",
       visible = true,
       opacity = 1,
@@ -115,7 +115,7 @@ return {
       y = 0,
       width = 26,
       height = 26,
-      id = 1,
+      id = 20,
       name = "Buildings",
       visible = false,
       opacity = 1,
@@ -160,7 +160,7 @@ return {
       y = 0,
       width = 26,
       height = 26,
-      id = 3,
+      id = 30,
       name = "Trees",
       visible = false,
       opacity = 1,

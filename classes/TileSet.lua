@@ -13,6 +13,7 @@ function TileSet:new(model)
     setmetatable(tileSet,self)
     self.__index = self
 
+    --local objects = {}
     -- if tileSet.tiles ~= nil then
     --     print("Animated tile count: " .. #tileSet.tiles)
     -- else
@@ -20,12 +21,12 @@ function TileSet:new(model)
     -- end
 
     tileSet.texture = love.graphics.newImage(tileSet.image)
-    tileSet:loadTiles()
+    tileSet:loadTileQuads()
 
     return tileSet
 end
 
-function TileSet:loadTiles()
+function TileSet:loadTileQuads()
     local index = self.firstgid
     for y = 0, self.tilecount / self.columns - 1 do
         for x = 0, self.columns - 1 do
@@ -48,15 +49,17 @@ function TileSet:loadTiles()
         end
     end
 
-    self:prepareAnimatedTiles()
+    self:prepareTiles()
 
     return self
 end
 
-function TileSet:prepareAnimatedTiles()
+function TileSet:prepareTiles()
     --print("Tile count from proc: " .. #self.tiles)
     -- Iterate tiles (animations) in tileset file (not object)
     for _, tile in ipairs(self.tiles) do
+        local tid = tile.id + _G.tilesetIdCorrection
+        if tile.animation then
             for __, frame in ipairs(tile.animation) do
 
                 --print("Origin frame id " .. frame.tileid)
@@ -64,16 +67,20 @@ function TileSet:prepareAnimatedTiles()
                 if frame.tileid ~= tile.id then
                     local donor = self:getChildren()[frame.tileid + _G.tilesetIdCorrection]
                     --print("Donor id " .. donor:getIndex())
-                    self:getChild(tile.id + _G.tilesetIdCorrection):addQuad(donor:getQuad(1))
+                    self:getChild(tid):addQuad(donor:getQuad(1))
 
                 end
                 --print("New frame id " .. frame.tileid)
             end
+            self:getChild(tid):setAnimation(tile.animation)
+        end
 
-        local tid = tile.id + _G.tilesetIdCorrection
-        --local t = 
-        self:getChild(tid):setAnimation(tile.animation)
-
+        if tile.objectGroup then
+            for __, object in ipairs(tile.objectGroup.objects) do
+                print(object.type)
+                self:getChild(tid):addObject(object)
+            end
+        end
         --print("Add " .. tid .. " to " .. self.name .. " tileset")
     end
 
@@ -89,6 +96,11 @@ end
 
 function TileSet:tidGlobalToLocal(globalTid)
     return globalTid - self.firstgid + 1
+end
+
+function TileSet:getTileByGID(gid)
+    local tid = self:tidGlobalToLocal(gid)
+    return self:getChildren()[tid]
 end
 
 function TileSet:drawTile(globalTid, xPos, yPos)

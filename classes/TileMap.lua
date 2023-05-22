@@ -5,6 +5,7 @@ TileMap = GameObject:extend({})
 
 TileMap.tilesets = {}
 TileMap.layers = {}
+TileMap.colliders = {}
 
 function TileMap:getObjectName()
     return "TileMap"
@@ -33,7 +34,48 @@ function TileMap:new(model)
         tileMap:addChild(ts)
     end
 
+    --tileMap:loadObjects()
+
     return tileMap
+end
+
+function TileMap:loadObjects()
+    local objects = {}
+    for _, layer in ipairs(self.layers) do
+        for y = 0, layer.height - 1 do
+            for x = 0, layer.width -1 do
+                local index = (x + y * layer.width) + 1
+                local gid = layer.data[index]
+                if gid ~= 0 then
+                    for i, tileset in ipairs(self:getChildren()) do
+                        if tileset:isGlobalTidIn(gid) then
+
+                            local xx = x * tileset.tilewidth
+                            local yy = y * tileset.tileheight
+
+                            local tile = tileset:getTileByGID(gid)
+
+                            if #tile:getObjects() > 0 then
+                                --for __, obj in ipairs(tile:getObjects()) do
+                                    local object = {
+                                        tileMap = self,
+                                        layer = layer.id, -- on what layer
+                                        index = index,    -- on what position
+                                        mapPosX = xx,
+                                        mapPosY = yy,
+                                        objects = tile:getObjects()
+                                    }
+                                    --table.insert(object.colliders, obj)
+                                --end
+                                table.insert(objects, object)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return objects
 end
 
 function TileMap:getLayers()
@@ -70,4 +112,12 @@ function TileMap:draw(layerID, xPos, yPos)
             end
         end
     end
+end
+
+function TileMap:getPixelHeight()
+    return self.height * self.tileheight
+end
+
+function TileMap:getPixelWidth()
+    return self.width * self.tilewidth
 end

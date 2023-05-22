@@ -17,6 +17,7 @@ function Tile:new(model)
     local quads = {}
     local texture = nil
     local animation = nil
+    local objects = {}
 
     local index = nil
 
@@ -74,6 +75,18 @@ function Tile:new(model)
             return true
         end
         return false
+    end
+
+    function tile:addObject(o)
+        table.insert(objects, o)
+    end
+
+    function tile:getObject(i)
+        return objects[i or 1]
+    end
+
+    function tile:getObjects()
+        return objects
     end
 
     return tile
