@@ -18,6 +18,8 @@ function Sprite:new(model)
     local texture = nil
     local animation = nil
 
+    local _isPaused = false
+
     local index = nil
 
     function sprite:addQuad(q)
@@ -70,10 +72,18 @@ function Sprite:new(model)
     end
 
     function sprite:isAnimated()
-        if animation ~= nil then
+        if animation ~= nil and (not _isPaused) then
             return true
         end
         return false
+    end
+
+    function sprite:pauseAnimation()
+        _isPaused = true
+    end
+
+    function sprite:resumeAnimation()
+        _isPaused = false
     end
 
     return sprite
@@ -86,7 +96,7 @@ function Sprite:draw(layerID, xPos, yPos)
 end
 
 function Sprite:update(dt)
-    if self:getAnimation() ~= nil then
+    if self:isAnimated() then
         local durationSec = self:getAnimation()[self:getFrame()].duration / 1000
         if self:getTimer() >= durationSec then
             local frame = self:getFrame() % #(self:getAnimation()) + 1
