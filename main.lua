@@ -7,6 +7,8 @@ end
 require "classes.TileMap"
 require "classes.Scene"
 require "classes.Rectangle"
+Tank = require "Tank"
+
 Camera = require("hump.camera")
 
 require "math"
@@ -47,7 +49,8 @@ function love.load()
     _G.scene:addChild(background)
 
     player = {}
-    player[1] = require("player")
+    player[1] = Tank:new(0)
+    --require("player")
 
     player[1]:setLayerID(15)
 
