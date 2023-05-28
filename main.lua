@@ -52,6 +52,7 @@ function love.load()
     player[1] = Tank:new(0)
     --require("player")
 
+    player[1]:setSpeed(50)
     player[1]:setLayerID(15)
 
     _G.scene:addChild(player[1])
@@ -65,6 +66,8 @@ function love.load()
 
     playerColl = world:newCircleCollider(0, 0, 7.5)
     playerColl:setFixedRotation(true)
+
+    player[1]:addCollider(playerColl)
 
     _G.borderColliders = createBorderColliders(map)
     -- topBorder = world:newLineCollider(16, 8, 16 + map:getPixelWidth(), 8)
@@ -96,56 +99,19 @@ function love.draw()
 end
 
 function love.update(dt)
-    local pv = { x = 0 , y = 0}
 
     if love.keyboard.isDown("right") then
-        pv.x = 50
-        player[1]:turn("right")
+        player[1]:move("right")
     elseif love.keyboard.isDown("left") then
-        pv.x = -50
-        player[1]:turn("left")
+        player[1]:move("left")
     elseif love.keyboard.isDown("up") then
-        pv.y = -50
-        player[1]:turn("up")
+        player[1]:move("up")
     elseif love.keyboard.isDown("down") then
-        pv.y = 50
-        player[1]:turn("down")
+        player[1]:move("down")
+    else
+        player[1]:stop()
     end
 
-    if pv.x ~= _G.playerVelocity.x or pv.y ~= _G.playerVelocity.y then
-        if pv.x == 0 and pv.y == 0 then
-            print("Stop")
-        else
-            print("Change direction")
-            local x = playerColl:getX()
-            local y = playerColl:getY()
-
-            print( math.abs(x % 8))
-
-
-            local dx = (x) % 8
-            local dy = (y) % 8
-
-            if dx <= 8/2 then 
-                playerColl:setX(x - dx)
-            else
-                playerColl:setX(x - dx + 8)
-            end
-
-            if dy <= 8/2 then 
-                playerColl:setY(y - dy)
-            else
-                playerColl:setY(y - dy + 8)
-            end
-        end
-
-        _G.playerVelocity.x, _G.playerVelocity.y = pv.x, pv.y    
-    end
-
-    playerColl:setLinearVelocity(_G.playerVelocity.x, _G.playerVelocity.y)
-
-    player[1]:setXPos(math.floor(playerColl:getX() - playerColl:getRadius()))
-    player[1]:setYPos(math.floor(playerColl:getY() - playerColl:getRadius()))
     updateColliders(_G.colliders)
 
     _G.scene:update(dt)

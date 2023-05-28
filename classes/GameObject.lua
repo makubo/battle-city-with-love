@@ -29,6 +29,9 @@ function GameObject:new(model)
     -- sub objects
     local _children = {}
 
+    -- attached colliders
+    local _colliders = {}
+
     function obj:setXPos(x)
         _xPos = x
     end
@@ -95,6 +98,17 @@ function GameObject:new(model)
 
     function obj:getChild(index)
         return _children[index]
+    end
+
+    function obj:addCollider(collider)
+        collider:setObject(self)
+
+        table.insert(_colliders, collider)
+        return #_colliders
+    end
+
+    function obj:getCollider(index)
+        return _colliders[index]
     end
 
     ---Set parent object
