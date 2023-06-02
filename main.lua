@@ -52,7 +52,7 @@ function love.load()
     player[1] = Tank:new(0)
     --require("player")
 
-    player[1]:setSpeed(50)
+    player[1]:setSpeed(40)
     player[1]:setLayerID(15)
 
     _G.scene:addChild(player[1])
