@@ -1,4 +1,4 @@
-local Tank = GameObject:new()
+local Tank = GameObject:extend({})
 
 function Tank:new(type)
 
@@ -6,7 +6,7 @@ function Tank:new(type)
     setmetatable(_tank,self)
     self.__index = self
 
-    local _direction = "top"
+    local _direction = "up"
 
     local _isMoving = false
     local _speed = 0
@@ -16,6 +16,9 @@ function Tank:new(type)
 
     local _tileset = TileSet:new(require("gfx.tanks"))
     local _tile = _tileset:getChild(1 + _tileShift)
+
+    local bullets = {}
+    local bulletLimit = 1
 
     _tile:setLayerID(16)
 
@@ -69,6 +72,12 @@ function Tank:new(type)
             return true
         end
         return false
+    end
+
+    function _tank:shoot()
+        if #bullets == bulletLimit then
+            return
+        end
     end
 
     function _tank:stop()
