@@ -27,7 +27,7 @@ function TileSet:new(model)
 end
 
 function TileSet:loadTileQuads()
-    local index = self.firstgid
+    local index = self.firstgid or 1
     for y = 0, self.tilecount / self.columns - 1 do
         for x = 0, self.columns - 1 do
             local quad = love.graphics.newQuad(
@@ -108,5 +108,5 @@ function TileSet:drawTile(globalTid, xPos, yPos)
     local tid = self:tidGlobalToLocal(globalTid)
     --print("TS draw tid " .. tid)
     local tile = self:getChildren()[tid]
-    tile:draw(xPos, yPos)
+    tile:draw(0, xPos, yPos)
 end

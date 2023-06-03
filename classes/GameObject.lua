@@ -22,7 +22,15 @@ function GameObject:new(model)
     local _xPos = 0
     local _yPos = 0
     local _layerId = 0
+
+    -- link to the parent object
+    local _parent = nil
+
+    -- sub objects
     local _children = {}
+
+    -- attached colliders
+    local _colliders = {}
 
     function obj:setXPos(x)
         _xPos = x
@@ -40,6 +48,32 @@ function GameObject:new(model)
         return _yPos
     end
 
+    --TODO: test
+    function obj:getXPosRelative(r)
+        local parent = self:getParent()
+        local relativesXPos = 0
+        if r == parent then
+            relativesXPos = parent.getXPos()
+        else
+            relativesXPos = parent:getXPosRelative(r)
+
+        end
+        return _xPos + relativesXPos
+    end
+
+    --TODO: test
+    function obj:getYPosRelative(r)
+        local parent = self:getParent()
+        local relativesYPos = 0
+        if r == parent then
+            relativesYPos = parent.getYPos()
+        else
+            relativesYPos = parent:getYPosRelative(r)
+
+        end
+        return _yPos + relativesYPos
+    end
+
     function obj:setLayerID(id)
         _layerId = id
     end
@@ -52,13 +86,39 @@ function GameObject:new(model)
         return _children
     end
 
+    ---Add child object and return number of childs
+    ---@param child GameObject
+    ---@return integer "number of childs"
     function obj:addChild(child)
+        child:setParent(self)
+
         table.insert(_children, child)
-        return child:getLayerID()
+        return #_children
     end
 
     function obj:getChild(index)
         return _children[index]
+    end
+
+    function obj:addCollider(collider)
+        collider:setObject(self)
+
+        table.insert(_colliders, collider)
+        return #_colliders
+    end
+
+    function obj:getCollider(index)
+        return _colliders[index]
+    end
+
+    ---Set parent object
+    ---@param p GameObject
+    function obj:setParent(p)
+        _parent = p
+    end
+
+    function obj:getParent()
+        return _parent
     end
 
     return obj
@@ -75,9 +135,9 @@ function GameObject:getLayers()
         table.insert(layers, self:getLayerID())
     end
 
-    -- Only root objects must have Layer ID -1
+    -- Root object have no parent 
     -- This part of code finalize the list of layers
-    if self:getLayerID() == -1 then
+    if self:getParent() == nil then
         layers = removeDuplicateTableValues(layers)
         local sortedLayers = {}
         for _, v in tablex.sortv(layers) do

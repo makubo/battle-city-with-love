@@ -7,6 +7,8 @@ end
 require "classes.TileMap"
 require "classes.Scene"
 require "classes.Rectangle"
+Tank = require "Tank"
+
 Camera = require("hump.camera")
 
 require "math"
@@ -46,15 +48,26 @@ function love.load()
 
     _G.scene:addChild(background)
 
-    require("pl.tablex")
+    player = {}
+    player[1] = Tank:new(0)
+    --require("player")
+
+    player[1]:setSpeed(40)
+    player[1]:setLayerID(15)
+
+    _G.scene:addChild(player[1])
+
 
     _G.layers = _G.scene:getLayers()
 
     local wf = require("windfield")
 
     _G.world = wf.newWorld()
-    player = world:newCircleCollider(0, 0, 7.5)
-    player:setFixedRotation(true)
+
+    playerColl = world:newCircleCollider(0, 0, 7.5)
+    playerColl:setFixedRotation(true)
+
+    player[1]:addCollider(playerColl)
 
     _G.borderColliders = createBorderColliders(map)
     -- topBorder = world:newLineCollider(16, 8, 16 + map:getPixelWidth(), 8)
@@ -73,6 +86,7 @@ function love.load()
 end
 
 function love.draw()
+    --print("draw function")
     camera:zoomTo(scaleToInscribedSize(_G.initialWidth,_G.initialHeight))
 
     camera:attach()
@@ -80,54 +94,23 @@ function love.draw()
             _G.scene:draw(layer)
             --, shiftX, shiftY)
         end
-        world:draw()
+        --world:draw()
     camera:detach()
 end
 
 function love.update(dt)
-    local pv = { x = 0 , y = 0}
 
     if love.keyboard.isDown("right") then
-        pv.x = 50
+        player[1]:move("right")
     elseif love.keyboard.isDown("left") then
-        pv.x = -50
+        player[1]:move("left")
     elseif love.keyboard.isDown("up") then
-        pv.y = -50
+        player[1]:move("up")
     elseif love.keyboard.isDown("down") then
-        pv.y = 50
+        player[1]:move("down")
+    else
+        player[1]:stop()
     end
-
-    if pv.x ~= _G.playerVelocity.x or pv.y ~= _G.playerVelocity.y then
-        if pv.x == 0 and pv.y == 0 then
-            print("Stop")
-        else
-            print("Change direction")
-            local x = player:getX()
-            local y = player:getY()
-
-            print( math.abs(x % 8))
-
-
-            local dx = (x) % 8
-            local dy = (y) % 8
-
-            if dx <= 8/2 then 
-                player:setX(x - dx)
-            else
-                player:setX(x - dx + 8)
-            end
-
-            if dy <= 8/2 then 
-                player:setY(y - dy)
-            else
-                player:setY(y - dy + 8)
-            end
-        end
-
-        _G.playerVelocity.x, _G.playerVelocity.y = pv.x, pv.y    
-    end
-
-    player:setLinearVelocity(_G.playerVelocity.x, _G.playerVelocity.y)
 
     updateColliders(_G.colliders)
 
