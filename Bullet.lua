@@ -1,8 +1,10 @@
 local Bullet = Sprite:extend({})
 
-function Bullet:new(type)
+function Bullet:new(direction)
 
-    local _bullet = Sprite:new()
+    local _tileset = TileSet:new(require("gfx.bullets"))
+    local _bullet = _tileset:getChild(1)
+
     setmetatable(_bullet,self)
     self.__index = self
 
