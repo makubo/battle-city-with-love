@@ -78,6 +78,34 @@ function Tank:new(type)
         if #bullets == bulletLimit then
             return
         end
+
+        local direction = self:getDirection()
+        local bulletDirection = 4
+        local collider = self:getCollider(1)
+        local bulletXSpawn = self:getXPos() + collider:getRadius() * 2
+        local bulletYSpawn = self:getYPos() + collider:getRadius()
+        if direction == "up" then
+            bulletDirection = 1
+            bulletXSpawn = self:getXPos() + collider:getRadius()
+            bulletYSpawn = self:getYPos()
+        elseif direction == "left" then
+            bulletDirection = 2
+            bulletXSpawn = self:getXPos()
+            bulletYSpawn = self:getYPos() + collider:getRadius()
+        elseif direction == "down" then
+            bulletDirection = 3
+            bulletXSpawn = self:getXPos() + collider:getRadius()
+            bulletYSpawn = self:getYPos() + collider:getRadius() * 2
+        end
+
+        local bullet = Bullet:new(bulletDirection, bulletXSpawn, bulletYSpawn)
+        -- TODO: stop using magic numbers.... in whole project
+        bullet:setLayerID(16)
+        _G.scene:addChild(bullet)
+
+        -- TODO: There is no bullet layer on start and the game engine does not support dynamic layers yet. So I update layer list on each shoot.
+        -- For now I disabled it because of using an existing layerID
+        -- _G.layers = _G.scene:getLayers()
     end
 
     function _tank:stop()
@@ -132,8 +160,8 @@ function Tank:update(dt)
 
     collider:setLinearVelocity(pv.x, pv.y)
 
-    player[1]:setXPos(math.floor(collider:getX() - collider:getRadius()))
-    player[1]:setYPos(math.floor(collider:getY() - collider:getRadius()))
+    self:setXPos(math.floor(collider:getX() - collider:getRadius()))
+    self:setYPos(math.floor(collider:getY() - collider:getRadius()))
 
     GameObject.update(self,dt)
 end

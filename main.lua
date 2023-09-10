@@ -8,6 +8,7 @@ require "classes.TileMap"
 require "classes.Scene"
 require "classes.Rectangle"
 Tank = require "Tank"
+Bullet = require "Bullet"
 
 Camera = require("hump.camera")
 
@@ -82,7 +83,7 @@ function love.load()
 
     _G.colliders = createColliders(map:loadObjects())
 
-    _G.playerVelocity = { x = 0, y = 0}
+    --_G.playerVelocity = { x = 0, y = 0}
 end
 
 function love.draw()
@@ -122,6 +123,10 @@ function love.keypressed(key)
     print("Pressed key: " .. key)
     if key == "return" then
         nextStage()
+    end
+
+    if key == "space" then
+        player[1]:shoot()
     end
 
     if key == "escape" then

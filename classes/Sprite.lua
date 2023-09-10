@@ -91,7 +91,7 @@ end
 
 function Sprite:draw(layerID, xPos, yPos)
     if self:getLayerID() == layerID then
-        love.graphics.draw(self:getTexture(), self:getQuad(), xPos or 0, yPos or 0)    
+        love.graphics.draw(self:getTexture(), self:getQuad(), self:getXPos() + (xPos or 0), self:getYPos() + (yPos or 0))
     end
 end
 
