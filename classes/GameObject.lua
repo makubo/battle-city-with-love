@@ -157,13 +157,7 @@ function GameObject:update(dt)
 end
 
 function GameObject:draw(layerID, xPos, yPos)
-    if xPos == nil then
-        xPos = 0
-    end
-    if yPos == nil then
-        yPos = 0
-    end
     for _, child in ipairs(self:getChildren()) do
-        child:draw(layerID, self:getXPos() + xPos, self:getYPos() + yPos)
+        child:draw(layerID, self:getXPos() + (xPos or 0), self:getYPos() + (yPos or 0))
     end
 end
