@@ -79,11 +79,28 @@ function Tank:new(type)
             return
         end
 
-        local bullet = Bullet:new(1)
+        local direction = self:getDirection()
+        local bulletDirection = 4
+        local collider = self:getCollider(1)
+        local bulletXSpawn = self:getXPos() + collider:getRadius() * 2
+        local bulletYSpawn = self:getYPos() + collider:getRadius()
+        if direction == "up" then
+            bulletDirection = 1
+            bulletXSpawn = self:getXPos() + collider:getRadius()
+            bulletYSpawn = self:getYPos()
+        elseif direction == "left" then
+            bulletDirection = 2
+            bulletXSpawn = self:getXPos()
+            bulletYSpawn = self:getYPos() + collider:getRadius()
+        elseif direction == "down" then
+            bulletDirection = 3
+            bulletXSpawn = self:getXPos() + collider:getRadius()
+            bulletYSpawn = self:getYPos() + collider:getRadius() * 2
+        end
+
+        local bullet = Bullet:new(bulletDirection, bulletXSpawn, bulletYSpawn)
         -- TODO: stop using magic numbers.... in whole project
         bullet:setLayerID(16)
-        bullet:setXPos(self:getXPos())
-        bullet:setYPos(self:getYPos())
         _G.scene:addChild(bullet)
 
         -- TODO: There is no bullet layer on start and the game engine does not support dynamic layers yet. So I update layer list on each shoot.

@@ -83,7 +83,7 @@ function love.load()
 
     _G.colliders = createColliders(map:loadObjects())
 
-    _G.playerVelocity = { x = 0, y = 0}
+    --_G.playerVelocity = { x = 0, y = 0}
 end
 
 function love.draw()
