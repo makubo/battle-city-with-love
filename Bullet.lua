@@ -10,3 +10,5 @@ function Bullet:new(direction)
 
     return _bullet
 end
+
+return Bullet

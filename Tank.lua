@@ -78,6 +78,17 @@ function Tank:new(type)
         if #bullets == bulletLimit then
             return
         end
+
+        local bullet = Bullet:new(1)
+        -- TODO: stop using magic numbers.... in whole project
+        bullet:setLayerID(16)
+        bullet:setXPos(self:getXPos())
+        bullet:setYPos(self:getYPos())
+        _G.scene:addChild(bullet)
+
+        -- TODO: There is no bullet layer on start and the game engine does not support dynamic layers yet. So I update layer list on each shoot.
+        -- For now I disabled it because of using an existing layerID
+        -- _G.layers = _G.scene:getLayers()
     end
 
     function _tank:stop()
@@ -132,8 +143,8 @@ function Tank:update(dt)
 
     collider:setLinearVelocity(pv.x, pv.y)
 
-    player[1]:setXPos(math.floor(collider:getX() - collider:getRadius()))
-    player[1]:setYPos(math.floor(collider:getY() - collider:getRadius()))
+    self:setXPos(math.floor(collider:getX() - collider:getRadius()))
+    self:setYPos(math.floor(collider:getY() - collider:getRadius()))
 
     GameObject.update(self,dt)
 end
