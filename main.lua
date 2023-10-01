@@ -2,17 +2,18 @@ if pcall(require, "developement") then
     print("Developement run")
 end
 
---lib/penlight/lua/pl/utils.lua
-
+-- engine classes
 require "classes.TileMap"
 require "classes.Scene"
 require "classes.Rectangle"
-Tank = require "Tank"
+
+--3rd party classes
+Windfield = require "windfield"
+Camera    = require "hump.camera"
+
+-- game classes
+Tank   = require "Tank"
 Bullet = require "Bullet"
-
-Camera = require("hump.camera")
-
-require "math"
 
 local STAGE_LIST = {}
 local STAGE_INDEX = 3
@@ -37,17 +38,9 @@ function love.load()
     map:setXPos(16)
     map:setYPos(8)
 
-    _G.scene = Scene:new()
-    _G.scene:addChild(map)
+    _G.world = Windfield.newWorld()
 
-    -- Set scene as root object
-    _G.scene:setLayerID(-1)
-
-    local background = Rectangle:new(0, 0, _G.initialWidth, _G.initialHeight)
-    background:setColor({99/255, 99/255, 99/255})
-    background:setLayerID(1)
-
-    _G.scene:addChild(background)
+    _G.scene = createScene(map)
 
     player = {}
     player[1] = Tank:new(0)
@@ -58,28 +51,12 @@ function love.load()
 
     _G.scene:addChild(player[1])
 
-
     _G.layers = _G.scene:getLayers()
-
-    local wf = require("windfield")
-
-    _G.world = wf.newWorld()
 
     playerColl = world:newCircleCollider(0, 0, 7.5)
     playerColl:setFixedRotation(true)
 
     player[1]:addCollider(playerColl)
-
-    _G.borderColliders = createBorderColliders(map)
-    -- topBorder = world:newLineCollider(16, 8, 16 + map:getPixelWidth(), 8)
-    -- bottomBorder = world:newLineCollider(16, 8 + map:getPixelHeight(),  16 + map:getPixelWidth(), 8 + map:getPixelHeight())
-    -- leftBorder = world:newLineCollider(16, 8, 16, 8 + map:getPixelHeight())
-    -- rightBorder = world:newLineCollider(16 + map:getPixelWidth(), 8, 16 + map:getPixelWidth(), 8 + map:getPixelHeight())
-
-    -- topBorder:setType("static")
-    -- bottomBorder:setType("static")
-    -- leftBorder:setType("static")
-    -- rightBorder:setType("static")
 
     _G.colliders = createColliders(map:loadObjects())
 
@@ -135,6 +112,10 @@ function love.keypressed(key)
 end
 
 function nextStage()
+
+    _G.scene:destroyColliders()
+    _G.scene = nil
+    collectgarbage()
     if STAGE_INDEX >= #STAGES then
         STAGE_INDEX = 1
     else
@@ -148,15 +129,50 @@ function nextStage()
     map:setYPos(8)
 
     destroyColliders(_G.colliders)
-    destroyBorderColliders(_G.borderColliders)
 
-    _G.borderColliders = createBorderColliders(map)
     _G.colliders = createColliders(map:loadObjects())
 
-    _G.scene:getChildren()[1] = map
+    _G.scene = createScene(map)
+    -- TODO: make something with the player
+    _G.scene:addChild(player[1])
     _G.layers = _G.scene:getLayers()
 end
 
+function createScene(map)
+    local scene = Scene:new()
+    scene:addChild(map)
+
+    -- Set scene as root object
+    scene:setLayerID(-1)
+
+    local background = Rectangle:new(0, 0, _G.initialWidth, _G.initialHeight)
+    background:setColor({99/255, 99/255, 99/255})
+    background:setLayerID(1)
+
+    scene:addChild(background)
+
+    local borders = {
+        top    = world:newLineCollider(map:getXPos(), map:getYPos(), map:getXPos() + map:getPixelWidth(), map:getYPos()),
+        bottom = world:newLineCollider(map:getXPos(), map:getYPos() + map:getPixelHeight(),  map:getXPos() + map:getPixelWidth(), map:getYPos() + map:getPixelHeight()),
+        left   = world:newLineCollider(map:getXPos(), map:getYPos(), map:getXPos(), map:getYPos() + map:getPixelHeight()),
+        right  = world:newLineCollider(map:getXPos() + map:getPixelWidth(), map:getYPos(), map:getXPos() + map:getPixelWidth(), map:getYPos() + map:getPixelHeight()),
+    }
+
+    borders.top:setType("static")
+    borders.bottom:setType("static")
+    borders.left:setType("static")
+    borders.right:setType("static")
+
+    scene:addCollider(borders.top)
+    scene:addCollider(borders.bottom)
+    scene:addCollider(borders.left)
+    scene:addCollider(borders.right)
+
+    return scene
+end
+
+
+-- TODO: move to the Game object
 function createColliders(objects)
     local colliders = {}
     for _, obj in ipairs(objects) do
@@ -237,27 +253,4 @@ function destroyColliders(cols)
     for _,col in ipairs(cols) do
         col:destroy()
     end
-end
-
-function destroyBorderColliders(borders)
-    borders.top:destroy()
-    borders.bottom:destroy()
-    borders.left:destroy()
-    borders.right:destroy()
-end
-
-function createBorderColliders(map)
-    local borders = {
-        top    = world:newLineCollider(map:getXPos(), map:getYPos(), map:getXPos() + map:getPixelWidth(), map:getYPos()),
-        bottom = world:newLineCollider(map:getXPos(), map:getYPos() + map:getPixelHeight(),  map:getXPos() + map:getPixelWidth(), map:getYPos() + map:getPixelHeight()),
-        left   = world:newLineCollider(map:getXPos(), map:getYPos(), map:getXPos(), map:getYPos() + map:getPixelHeight()),
-        right  = world:newLineCollider(map:getXPos() + map:getPixelWidth(), map:getYPos(), map:getXPos() + map:getPixelWidth(), map:getYPos() + map:getPixelHeight()),
-    }
-
-    borders.top:setType("static")
-    borders.bottom:setType("static")
-    borders.left:setType("static")
-    borders.right:setType("static")
-
-    return borders
 end

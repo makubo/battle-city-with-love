@@ -111,6 +111,20 @@ function GameObject:new(model)
         return _colliders[index]
     end
 
+    function obj:destroyColliders()
+        for _,col in ipairs(_colliders) do
+            col:destroy()
+        end
+    end
+
+    function obj:clean()
+        for i, child in ipairs(_children) do
+            child:clean()
+            table.remove(_children, i)
+        end
+        self:destroyColliders()
+    end
+
     ---Set parent object
     ---@param p GameObject
     function obj:setParent(p)
