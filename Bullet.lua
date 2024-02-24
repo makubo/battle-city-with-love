@@ -29,7 +29,7 @@ end
 function Bullet:update()
     local collider = self:getCollider(1)
     self:setXPos(math.floor(collider:getX() - collider:getRadius() - 3))
-    self:setYPos(math.floor(collider:getY() - collider:getRadius() - 3))
+    self:setYPos(math.floor(collider:getY() - collider:getRadius() - 2))
 end
 
 return Bullet
