@@ -19,6 +19,8 @@ local STAGE_LIST = {}
 local STAGE_INDEX = 3
 local STAGES = {}
 
+DRAW_COLLIDER = false
+
 function love.load()
 
     _G.camera = Camera(_G.initialWidth / 2,_G.initialHeight / 2)
@@ -72,7 +74,9 @@ function love.draw()
             _G.scene:draw(layer)
             --, shiftX, shiftY)
         end
-        --world:draw()
+        if DRAW_COLLIDER then
+            world:draw()
+        end
     camera:detach()
 end
 
@@ -108,6 +112,10 @@ function love.keypressed(key)
 
     if key == "escape" then
        love.event.quit()
+    end
+
+    if key == "f12" then
+        DRAW_COLLIDER = not DRAW_COLLIDER
     end
 end
 
